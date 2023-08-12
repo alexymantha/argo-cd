@@ -17516,6 +17516,16 @@ spec:
                         type: array
                     type: object
                   type:
+<<<<<<< HEAD
+=======
+                    type: string
+                type: object
+              strategyRef:
+                properties:
+                  kind:
+                    type: string
+                  name:
+>>>>>>> f0468899c (wip)
                     type: string
                 type: object
               syncPolicy:

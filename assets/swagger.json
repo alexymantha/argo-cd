@@ -6101,7 +6101,14 @@
           "$ref": "#/definitions/v1alpha1ApplicationPreservedFields"
         },
         "strategy": {
+<<<<<<< HEAD
           "$ref": "#/definitions/v1alpha1ApplicationSetStrategy"
+=======
+          "$ref": "#/definitions/v1alpha1ApplicationSetSyncStrategySpec"
+        },
+        "strategyRef": {
+          "$ref": "#/definitions/v1alpha1ApplicationSetSyncStrategyRef"
+>>>>>>> f0468899c (wip)
         },
         "syncPolicy": {
           "$ref": "#/definitions/v1alpha1ApplicationSetSyncPolicy"
@@ -6156,6 +6163,57 @@
         }
       }
     },
+<<<<<<< HEAD
+=======
+    "v1alpha1ApplicationSetSyncStrategyRef": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "v1alpha1ApplicationSetSyncStrategyRolloutStep": {
+      "type": "object",
+      "properties": {
+        "matchExpressions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1alpha1ApplicationMatchExpression"
+          }
+        },
+        "maxUpdate": {
+          "$ref": "#/definitions/intstrIntOrString"
+        }
+      }
+    },
+    "v1alpha1ApplicationSetSyncStrategyRolloutStrategy": {
+      "type": "object",
+      "properties": {
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1alpha1ApplicationSetSyncStrategyRolloutStep"
+          }
+        }
+      }
+    },
+    "v1alpha1ApplicationSetSyncStrategySpec": {
+      "description": "ApplicationSetSyncStrategyStrategy configures how generated Applications are updated in sequence.",
+      "type": "object",
+      "properties": {
+        "rollingSync": {
+          "$ref": "#/definitions/v1alpha1ApplicationSetSyncStrategyRolloutStrategy"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+>>>>>>> f0468899c (wip)
     "v1alpha1ApplicationSetTemplate": {
       "type": "object",
       "title": "ApplicationSetTemplate represents argocd ApplicationSpec",
