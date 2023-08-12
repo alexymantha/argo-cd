@@ -24,6 +24,7 @@ import (
 	cmdutil "github.com/argoproj/argo-cd/v2/cmd/util"
 	"github.com/argoproj/argo-cd/v2/common"
 	"github.com/argoproj/argo-cd/v2/controller/sharding"
+	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	argoappv1 "github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/argoproj/argo-cd/v2/pkg/client/clientset/versioned"
 	"github.com/argoproj/argo-cd/v2/util/argo"
@@ -348,7 +349,7 @@ func NewClusterEnableNamespacedMode() *cobra.Command {
 						continue
 					}
 
-					cluster, err := argoDB.GetCluster(ctx, server)
+					cluster, err := argoDB.GetCluster(ctx, &v1alpha1.ClusterIdentifier{Server: server})
 					if err != nil {
 						return fmt.Errorf("error getting cluster from server: %w", err)
 					}
@@ -403,7 +404,7 @@ func NewClusterDisableNamespacedMode() *cobra.Command {
 						continue
 					}
 
-					cluster, err := argoDB.GetCluster(ctx, server)
+					cluster, err := argoDB.GetCluster(ctx, &v1alpha1.ClusterIdentifier{Server: server})
 					if err != nil {
 						return fmt.Errorf("error getting cluster from server: %w", err)
 					}
@@ -504,7 +505,7 @@ func NewClusterConfig() *cobra.Command {
 			kubeclientset, err := kubernetes.NewForConfig(conf)
 			errors.CheckError(err)
 
-			cluster, err := db.NewDB(namespace, settings.NewSettingsManager(ctx, kubeclientset, namespace), kubeclientset).GetCluster(ctx, serverUrl)
+			cluster, err := db.NewDB(namespace, settings.NewSettingsManager(ctx, kubeclientset, namespace), kubeclientset).GetCluster(ctx, &v1alpha1.ClusterIdentifier{Server: serverUrl})
 			errors.CheckError(err)
 			err = kube.WriteKubeConfig(cluster.RawRestConfig(), namespace, output)
 			errors.CheckError(err)

@@ -205,6 +205,32 @@ type KustomizeSettings struct {
 }
 
 var (
+	ByClusterIdentifierIndexer     = "byClusterIdentifier"
+	byClusterIdentifierIndexerFunc = func(obj interface{}) ([]string, error) {
+		s, ok := obj.(*apiv1.Secret)
+		if !ok {
+			return nil, nil
+		}
+
+		if s.Labels == nil || s.Labels[common.LabelKeySecretType] != common.LabelValueSecretTypeCluster {
+			return nil, nil
+		}
+
+		if s.Data == nil {
+			return nil, nil
+		}
+
+		var url []byte
+		if url, ok = s.Data["server"]; !ok {
+			return nil, nil
+		}
+
+		var name []byte
+		if name, ok = s.Data["name"]; !ok {
+			return []string{strings.TrimRight(string(url), "/")}, nil
+		}
+		return []string{strings.TrimRight(fmt.Sprintf("%s/%s", url, name), "/")}, nil
+	}
 	ByClusterURLIndexer     = "byClusterURL"
 	byClusterURLIndexerFunc = func(obj interface{}) ([]string, error) {
 		s, ok := obj.(*apiv1.Secret)
@@ -1293,11 +1319,12 @@ func (mgr *SettingsManager) initialize(ctx context.Context) error {
 		},
 	}
 	indexers := cache.Indexers{
-		cache.NamespaceIndex:    cache.MetaNamespaceIndexFunc,
-		ByClusterURLIndexer:     byClusterURLIndexerFunc,
-		ByClusterNameIndexer:    byClusterNameIndexerFunc,
-		ByProjectClusterIndexer: byProjectIndexerFunc(common.LabelValueSecretTypeCluster),
-		ByProjectRepoIndexer:    byProjectIndexerFunc(common.LabelValueSecretTypeRepository),
+		cache.NamespaceIndex:       cache.MetaNamespaceIndexFunc,
+		ByClusterIdentifierIndexer: byClusterIdentifierIndexerFunc,
+		ByClusterURLIndexer:        byClusterURLIndexerFunc,
+		ByClusterNameIndexer:       byClusterNameIndexerFunc,
+		ByProjectClusterIndexer:    byProjectIndexerFunc(common.LabelValueSecretTypeCluster),
+		ByProjectRepoIndexer:       byProjectIndexerFunc(common.LabelValueSecretTypeRepository),
 	}
 	cmInformer := v1.NewFilteredConfigMapInformer(mgr.clientset, mgr.namespace, 3*time.Minute, indexers, tweakConfigMap)
 	secretsInformer := v1.NewSecretInformer(mgr.clientset, mgr.namespace, 3*time.Minute, indexers)

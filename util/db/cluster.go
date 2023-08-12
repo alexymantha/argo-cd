@@ -19,7 +19,6 @@ import (
 	"k8s.io/utils/pointer"
 
 	"github.com/argoproj/argo-cd/v2/common"
-	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	appsv1 "github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	appv1 "github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/argoproj/argo-cd/v2/util/collections"
@@ -139,7 +138,7 @@ func (db *db) WatchClusters(ctx context.Context,
 	handleAddEvent func(cluster *appv1.Cluster),
 	handleModEvent func(oldCluster *appv1.Cluster, newCluster *appv1.Cluster),
 	handleDeleteEvent func(clusterServer string)) error {
-	localCls, err := db.GetCluster(ctx, appsv1.ClusterIdentifier{Name: "in-cluster", Server: appv1.KubernetesInternalAPIServerAddr})
+	localCls, err := db.GetCluster(ctx, &appsv1.ClusterIdentifier{Name: "in-cluster", Server: appv1.KubernetesInternalAPIServerAddr})
 	if err != nil {
 		return err
 	}
@@ -215,7 +214,7 @@ func (db *db) GetCluster(_ context.Context, clusterId *appv1.ClusterIdentifier) 
 	if err != nil {
 		return nil, err
 	}
-	res, err := informer.GetIndexer().ByIndex(settings.ByClusterURLIndexer, clusterId.GetKey())
+	res, err := informer.GetIndexer().ByIndex(settings.ByClusterIdentifierIndexer, clusterId.GetKey())
 	if err != nil {
 		return nil, err
 	}
@@ -304,7 +303,7 @@ func (db *db) UpdateCluster(ctx context.Context, c *appv1.Cluster) (*appv1.Clust
 }
 
 // DeleteCluster deletes a cluster by name
-func (db *db) DeleteCluster(ctx context.Context, clusterId appsv1.ClusterIdentifier) error {
+func (db *db) DeleteCluster(ctx context.Context, clusterId *appsv1.ClusterIdentifier) error {
 	secret, err := db.getClusterSecret(clusterId)
 	if err != nil {
 		return err

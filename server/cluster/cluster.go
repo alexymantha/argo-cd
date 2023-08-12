@@ -42,7 +42,7 @@ func NewServer(db db.ArgoDB, enf *rbac.Enforcer, cache *servercache.Cache, kubec
 	}
 }
 
-func CreateClusterRBACObject(project string, clusterId appv1.ClusterIdentifier) string {
+func CreateClusterRBACObject(project string, clusterId *appv1.ClusterIdentifier) string {
 	if project != "" {
 		return project + "/" + clusterId.GetKey()
 	}
@@ -192,7 +192,7 @@ func (s *Server) Get(ctx context.Context, q *cluster.ClusterQuery) (*appv1.Clust
 		return nil, err
 	}
 
-	if err := s.enf.EnforceErr(ctx.Value("claims"), rbacpolicy.ResourceClusters, rbacpolicy.ActionGet, CreateClusterRBACObject(c.Project, appv1.ClusterIdentifier{Name: q.Name, Server: q.Server})); err != nil {
+	if err := s.enf.EnforceErr(ctx.Value("claims"), rbacpolicy.ResourceClusters, rbacpolicy.ActionGet, CreateClusterRBACObject(c.Project, &appv1.ClusterIdentifier{Name: q.Name, Server: q.Server})); err != nil {
 		return nil, err
 	}
 
@@ -225,7 +225,7 @@ func (s *Server) getCluster(ctx context.Context, q *cluster.ClusterQuery) (*appv
 	}
 
 	if q.Server != "" {
-		c, err := s.db.GetCluster(ctx, appv1.ClusterIdentifier{Server: q.Server, Name: q.Name})
+		c, err := s.db.GetCluster(ctx, &appv1.ClusterIdentifier{Server: q.Server, Name: q.Name})
 		if err != nil {
 			return nil, err
 		}
@@ -339,7 +339,7 @@ func (s *Server) Delete(ctx context.Context, q *cluster.ClusterQuery) (*cluster.
 	}
 
 	//TODO: refactor to remove special handling for name/server
-	clusterId := appv1.ClusterIdentifier{Name: q.Name, Server: q.Server}
+	clusterId := &appv1.ClusterIdentifier{Name: q.Name, Server: q.Server}
 	if q.Name != "" {
 		_, err := s.db.GetClusterServersByName(ctx, q.Name)
 		if err != nil {
@@ -359,7 +359,7 @@ func (s *Server) Delete(ctx context.Context, q *cluster.ClusterQuery) (*cluster.
 	return &cluster.ClusterResponse{}, nil
 }
 
-func enforceAndDelete(s *Server, ctx context.Context, clusterId appv1.ClusterIdentifier, project string) error {
+func enforceAndDelete(s *Server, ctx context.Context, clusterId *appv1.ClusterIdentifier, project string) error {
 	if err := s.enf.EnforceErr(ctx.Value("claims"), rbacpolicy.ResourceClusters, rbacpolicy.ActionDelete, CreateClusterRBACObject(project, clusterId)); err != nil {
 		return err
 	}
@@ -377,7 +377,7 @@ func (s *Server) RotateAuth(ctx context.Context, q *cluster.ClusterQuery) (*clus
 	}
 
 	//TODO: refactor to remove special handling for name/server
-	clusterId := appv1.ClusterIdentifier{Name: q.Name, Server: q.Server}
+	clusterId := &appv1.ClusterIdentifier{Name: q.Name, Server: q.Server}
 	var servers []string
 	if q.Name != "" {
 		servers, err = s.db.GetClusterServersByName(ctx, q.Name)
@@ -475,7 +475,7 @@ func (s *Server) InvalidateCache(ctx context.Context, q *cluster.ClusterQuery) (
 	if err != nil {
 		return nil, err
 	}
-	if err := s.enf.EnforceErr(ctx.Value("claims"), rbacpolicy.ResourceClusters, rbacpolicy.ActionUpdate, CreateClusterRBACObject(cls.Project, appv1.ClusterIdentifier{Name: q.Name, Server: q.Server})); err != nil {
+	if err := s.enf.EnforceErr(ctx.Value("claims"), rbacpolicy.ResourceClusters, rbacpolicy.ActionUpdate, CreateClusterRBACObject(cls.Project, &appv1.ClusterIdentifier{Name: q.Name, Server: q.Server})); err != nil {
 		return nil, err
 	}
 	now := v1.Now()
