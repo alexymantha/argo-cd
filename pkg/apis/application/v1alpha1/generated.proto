@@ -291,11 +291,7 @@ message ApplicationSetSpec {
 
   optional ApplicationSetSyncPolicy syncPolicy = 4;
 
-<<<<<<< HEAD
   optional ApplicationSetStrategy strategy = 5;
-=======
-  optional ApplicationSetSyncStrategySpec strategy = 5;
->>>>>>> f0468899c (wip)
 
   optional ApplicationPreservedFields preservedFields = 6;
 

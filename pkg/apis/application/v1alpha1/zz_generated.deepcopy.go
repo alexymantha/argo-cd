@@ -660,11 +660,7 @@ func (in *ApplicationSetSpec) DeepCopyInto(out *ApplicationSetSpec) {
 	}
 	if in.Strategy != nil {
 		in, out := &in.Strategy, &out.Strategy
-<<<<<<< HEAD
 		*out = new(ApplicationSetStrategy)
-=======
-		*out = new(ApplicationSetSyncStrategySpec)
->>>>>>> f0468899c (wip)
 		(*in).DeepCopyInto(*out)
 	}
 	if in.PreservedFields != nil {
