@@ -172,7 +172,7 @@ func (s *Server) Create(ctx context.Context, q *cluster.ClusterCreateRequest) (*
 		}
 	}
 
-	err = s.cache.SetClusterInfo(c.Server, &appv1.ClusterInfo{
+	err = s.cache.SetClusterInfo(c.GetIdentifier(), &appv1.ClusterInfo{
 		ServerVersion: serverVersion,
 		ConnectionState: appv1.ConnectionState{
 			Status:     appv1.ConnectionStatusSuccessful,
@@ -318,7 +318,7 @@ func (s *Server) Update(ctx context.Context, q *cluster.ClusterUpdateRequest) (*
 	if err != nil {
 		return nil, err
 	}
-	err = s.cache.SetClusterInfo(clust.Server, &appv1.ClusterInfo{
+	err = s.cache.SetClusterInfo(clust.GetIdentifier(), &appv1.ClusterInfo{
 		ServerVersion: serverVersion,
 		ConnectionState: appv1.ConnectionState{
 			Status:     appv1.ConnectionStatusSuccessful,
@@ -430,7 +430,7 @@ func (s *Server) RotateAuth(ctx context.Context, q *cluster.ClusterQuery) (*clus
 		if err != nil {
 			return nil, err
 		}
-		err = s.cache.SetClusterInfo(clust.Server, &appv1.ClusterInfo{
+		err = s.cache.SetClusterInfo(clust.GetIdentifier(), &appv1.ClusterInfo{
 			ServerVersion: serverVersion,
 			ConnectionState: appv1.ConnectionState{
 				Status:     appv1.ConnectionStatusSuccessful,
@@ -450,7 +450,7 @@ func (s *Server) RotateAuth(ctx context.Context, q *cluster.ClusterQuery) (*clus
 }
 
 func (s *Server) toAPIResponse(clust *appv1.Cluster) *appv1.Cluster {
-	_ = s.cache.GetClusterInfo(clust.Server, &clust.Info)
+	_ = s.cache.GetClusterInfo(clust.GetIdentifier(), &clust.Info)
 
 	clust.Config.Password = ""
 	clust.Config.BearerToken = ""

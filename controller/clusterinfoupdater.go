@@ -3,12 +3,13 @@ package controller
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/argoproj/gitops-engine/pkg/cache"
 	"github.com/argoproj/gitops-engine/pkg/utils/kube"
 	log "github.com/sirupsen/logrus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
-	"time"
 
 	"github.com/argoproj/argo-cd/v2/controller/metrics"
 	appv1 "github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
@@ -137,5 +138,5 @@ func (c *clusterInfoUpdater) updateClusterInfo(cluster appv1.Cluster, info *cach
 		}
 	}
 
-	return c.cache.SetClusterInfo(cluster.Server, &clusterInfo)
+	return c.cache.SetClusterInfo(cluster.GetIdentifier(), &clusterInfo)
 }

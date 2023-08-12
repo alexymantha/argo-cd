@@ -339,7 +339,7 @@ func (a *ArgoCDWebhookHandler) storePreviouslyCachedManifests(app *v1alpha1.Appl
 	}
 
 	var clusterInfo v1alpha1.ClusterInfo
-	err = a.serverCache.GetClusterInfo(app.Spec.Destination.Server, &clusterInfo)
+	err = a.serverCache.GetClusterInfo(app.Spec.Destination.GetClusterIdentifier(), &clusterInfo)
 	if err != nil {
 		return fmt.Errorf("error getting cluster info: %w", err)
 	}
