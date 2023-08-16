@@ -104,19 +104,19 @@ func init() {
 
 type LiveStateCache interface {
 	// Returns k8s server version
-	GetVersionsInfo(serverURL string) (string, []kube.APIResourceInfo, error)
+	GetVersionsInfo(clusterId *appv1.ClusterIdentifier) (string, []kube.APIResourceInfo, error)
 	// Returns true of given group kind is a namespaced resource
-	IsNamespaced(server string, gk schema.GroupKind) (bool, error)
+	IsNamespaced(clusterId *appv1.ClusterIdentifier, gk schema.GroupKind) (bool, error)
 	// Returns synced cluster cache
-	GetClusterCache(server string) (clustercache.ClusterCache, error)
+	GetClusterCache(clusterId *appv1.ClusterIdentifier) (clustercache.ClusterCache, error)
 	// Executes give callback against resource specified by the key and all its children
-	IterateHierarchy(server string, key kube.ResourceKey, action func(child appv1.ResourceNode, appName string) bool) error
+	IterateHierarchy(clusterId *appv1.ClusterIdentifier, key kube.ResourceKey, action func(child appv1.ResourceNode, appName string) bool) error
 	// Returns state of live nodes which correspond for target nodes of specified application.
 	GetManagedLiveObjs(a *appv1.Application, targetObjs []*unstructured.Unstructured) (map[kube.ResourceKey]*unstructured.Unstructured, error)
 	// IterateResources iterates all resource stored in cache
-	IterateResources(server string, callback func(res *clustercache.Resource, info *ResourceInfo)) error
+	IterateResources(clusterId *appv1.ClusterIdentifier, callback func(res *clustercache.Resource, info *ResourceInfo)) error
 	// Returns all top level resources (resources without owner references) of a specified namespace
-	GetNamespaceTopLevelResources(server string, namespace string) (map[kube.ResourceKey]appv1.ResourceNode, error)
+	GetNamespaceTopLevelResources(clusterId *appv1.ClusterIdentifier, namespace string) (map[kube.ResourceKey]appv1.ResourceNode, error)
 	// Starts watching resources of each controlled cluster.
 	Run(ctx context.Context) error
 	// Returns information about monitored clusters
@@ -401,9 +401,9 @@ func isTransientNetworkErr(err error) bool {
 	return false
 }
 
-func (c *liveStateCache) getCluster(server string) (clustercache.ClusterCache, error) {
+func (c *liveStateCache) getCluster(clusterId *appv1.ClusterIdentifier) (clustercache.ClusterCache, error) {
 	c.lock.RLock()
-	clusterCache, ok := c.clusters[server]
+	clusterCache, ok := c.clusters[clusterId.GetKey()]
 	cacheSettings := c.cacheSettings
 	c.lock.RUnlock()
 
@@ -414,12 +414,12 @@ func (c *liveStateCache) getCluster(server string) (clustercache.ClusterCache, e
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
-	clusterCache, ok = c.clusters[server]
+	clusterCache, ok = c.clusters[clusterId.GetKey()]
 	if ok {
 		return clusterCache, nil
 	}
 
-	cluster, err := c.db.GetCluster(context.Background(), server)
+	cluster, err := c.db.GetCluster(context.Background(), clusterId)
 	if err != nil {
 		return nil, fmt.Errorf("error getting cluster: %w", err)
 	}
@@ -541,13 +541,13 @@ func (c *liveStateCache) getCluster(server string) (clustercache.ClusterCache, e
 		c.metricsServer.IncClusterEventsCount(cluster.Server, gvk.Group, gvk.Kind)
 	})
 
-	c.clusters[server] = clusterCache
+	c.clusters[clusterId.GetKey()] = clusterCache
 
 	return clusterCache, nil
 }
 
-func (c *liveStateCache) getSyncedCluster(server string) (clustercache.ClusterCache, error) {
-	clusterCache, err := c.getCluster(server)
+func (c *liveStateCache) getSyncedCluster(clusterId *appv1.ClusterIdentifier) (clustercache.ClusterCache, error) {
+	clusterCache, err := c.getCluster(clusterId)
 	if err != nil {
 		return nil, fmt.Errorf("error getting cluster: %w", err)
 	}
@@ -571,16 +571,16 @@ func (c *liveStateCache) invalidate(cacheSettings cacheSettings) {
 	log.Info("live state cache invalidated")
 }
 
-func (c *liveStateCache) IsNamespaced(server string, gk schema.GroupKind) (bool, error) {
-	clusterInfo, err := c.getSyncedCluster(server)
+func (c *liveStateCache) IsNamespaced(clusterId *appv1.ClusterIdentifier, gk schema.GroupKind) (bool, error) {
+	clusterInfo, err := c.getSyncedCluster(clusterId)
 	if err != nil {
 		return false, err
 	}
 	return clusterInfo.IsNamespaced(gk)
 }
 
-func (c *liveStateCache) IterateHierarchy(server string, key kube.ResourceKey, action func(child appv1.ResourceNode, appName string) bool) error {
-	clusterInfo, err := c.getSyncedCluster(server)
+func (c *liveStateCache) IterateHierarchy(clusterId *appv1.ClusterIdentifier, key kube.ResourceKey, action func(child appv1.ResourceNode, appName string) bool) error {
+	clusterInfo, err := c.getSyncedCluster(clusterId)
 	if err != nil {
 		return err
 	}
@@ -590,8 +590,8 @@ func (c *liveStateCache) IterateHierarchy(server string, key kube.ResourceKey, a
 	return nil
 }
 
-func (c *liveStateCache) IterateResources(server string, callback func(res *clustercache.Resource, info *ResourceInfo)) error {
-	clusterInfo, err := c.getSyncedCluster(server)
+func (c *liveStateCache) IterateResources(clusterId *appv1.ClusterIdentifier, callback func(res *clustercache.Resource, info *ResourceInfo)) error {
+	clusterInfo, err := c.getSyncedCluster(clusterId)
 	if err != nil {
 		return err
 	}
@@ -604,8 +604,8 @@ func (c *liveStateCache) IterateResources(server string, callback func(res *clus
 	return nil
 }
 
-func (c *liveStateCache) GetNamespaceTopLevelResources(server string, namespace string) (map[kube.ResourceKey]appv1.ResourceNode, error) {
-	clusterInfo, err := c.getSyncedCluster(server)
+func (c *liveStateCache) GetNamespaceTopLevelResources(clusterId *appv1.ClusterIdentifier, namespace string) (map[kube.ResourceKey]appv1.ResourceNode, error) {
+	clusterInfo, err := c.getSyncedCluster(clusterId)
 	if err != nil {
 		return nil, err
 	}
@@ -618,19 +618,19 @@ func (c *liveStateCache) GetNamespaceTopLevelResources(server string, namespace 
 }
 
 func (c *liveStateCache) GetManagedLiveObjs(a *appv1.Application, targetObjs []*unstructured.Unstructured) (map[kube.ResourceKey]*unstructured.Unstructured, error) {
-	clusterInfo, err := c.getSyncedCluster(a.Spec.Destination.Server)
+	clusterInfo, err := c.getSyncedCluster(a.Spec.Destination.GetClusterIdentifier())
 	if err != nil {
-		return nil, fmt.Errorf("failed to get cluster info for %q: %w", a.Spec.Destination.Server, err)
+		return nil, fmt.Errorf("failed to get cluster info for %q: %w", a.Spec.Destination.GetClusterIdentifier().GetKey(), err)
 	}
 	return clusterInfo.GetManagedLiveObjs(targetObjs, func(r *clustercache.Resource) bool {
 		return resInfo(r).AppName == a.InstanceName(c.settingsMgr.GetNamespace())
 	})
 }
 
-func (c *liveStateCache) GetVersionsInfo(serverURL string) (string, []kube.APIResourceInfo, error) {
-	clusterInfo, err := c.getSyncedCluster(serverURL)
+func (c *liveStateCache) GetVersionsInfo(clusterId *appv1.ClusterIdentifier) (string, []kube.APIResourceInfo, error) {
+	clusterInfo, err := c.getSyncedCluster(clusterId)
 	if err != nil {
-		return "", nil, fmt.Errorf("failed to get cluster info for %q: %w", serverURL, err)
+		return "", nil, fmt.Errorf("failed to get cluster info for %q: %w", clusterId.GetKey(), err)
 	}
 	return clusterInfo.GetServerVersion(), clusterInfo.GetAPIResources(), nil
 }
@@ -727,7 +727,7 @@ func (c *liveStateCache) handleAddEvent(cluster *appv1.Cluster) {
 		if c.isClusterHasApps(c.appInformer.GetStore().List(), cluster) {
 			go func() {
 				// warm up cache for cluster with apps
-				_, _ = c.getSyncedCluster(cluster.Server)
+				_, _ = c.getSyncedCluster(cluster.GetIdentifier())
 			}()
 		}
 	}
@@ -803,6 +803,6 @@ func (c *liveStateCache) GetClustersInfo() []clustercache.ClusterInfo {
 	return res
 }
 
-func (c *liveStateCache) GetClusterCache(server string) (clustercache.ClusterCache, error) {
-	return c.getSyncedCluster(server)
+func (c *liveStateCache) GetClusterCache(clusterId *appv1.ClusterIdentifier) (clustercache.ClusterCache, error) {
+	return c.getSyncedCluster(clusterId)
 }

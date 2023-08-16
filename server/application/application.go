@@ -1204,7 +1204,7 @@ func (s *Server) getApplicationClusterConfig(ctx context.Context, a *appv1.Appli
 	if err := argo.ValidateDestination(ctx, &a.Spec.Destination, s.db); err != nil {
 		return nil, fmt.Errorf("error validating destination: %w", err)
 	}
-	clst, err := s.db.GetCluster(ctx, a.Spec.Destination.Server)
+	clst, err := s.db.GetCluster(ctx, a.Spec.Destination.GetClusterIdentifier())
 	if err != nil {
 		return nil, fmt.Errorf("error getting cluster: %w", err)
 	}
@@ -1952,7 +1952,7 @@ func (s *Server) getObjectsForDeepLinks(ctx context.Context, app *appv1.Applicat
 	if !permitted {
 		return nil, nil, fmt.Errorf("error getting destination cluster")
 	}
-	clst, err := s.db.GetCluster(ctx, app.Spec.Destination.Server)
+	clst, err := s.db.GetCluster(ctx, app.Spec.Destination.GetClusterIdentifier())
 	if err != nil {
 		log.WithFields(map[string]interface{}{
 			"application": app.GetName(),

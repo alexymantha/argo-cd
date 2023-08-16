@@ -73,8 +73,8 @@ func appResourcesTreeKey(appName string) string {
 	return fmt.Sprintf("app|resources-tree|%s", appName)
 }
 
-func clusterInfoKey(server string) string {
-	return fmt.Sprintf("cluster|info|%s", server)
+func clusterInfoKey(clusterId *appv1.ClusterIdentifier) string {
+	return fmt.Sprintf("cluster|info|%s", clusterId.GetKey())
 }
 
 func (c *Cache) GetAppResourcesTree(appName string, res *appv1.ApplicationTree) error {
@@ -97,11 +97,11 @@ func (c *Cache) SetAppResourcesTree(appName string, resourcesTree *appv1.Applica
 	return c.Cache.NotifyUpdated(appManagedResourcesKey(appName))
 }
 
-func (c *Cache) SetClusterInfo(server string, info *appv1.ClusterInfo) error {
-	return c.SetItem(clusterInfoKey(server), info, clusterInfoCacheExpiration, info == nil)
+func (c *Cache) SetClusterInfo(clusterId *appv1.ClusterIdentifier, info *appv1.ClusterInfo) error {
+	return c.SetItem(clusterInfoKey(clusterId), info, clusterInfoCacheExpiration, info == nil)
 }
 
-func (c *Cache) GetClusterInfo(server string, res *appv1.ClusterInfo) error {
-	err := c.GetItem(clusterInfoKey(server), &res)
+func (c *Cache) GetClusterInfo(clusterId *appv1.ClusterIdentifier, res *appv1.ClusterInfo) error {
+	err := c.GetItem(clusterInfoKey(clusterId), &res)
 	return err
 }

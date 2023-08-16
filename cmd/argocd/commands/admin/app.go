@@ -383,16 +383,16 @@ func reconcileApplications(
 	})
 
 	var items []appReconcileResult
-	prevServer := ""
+	var prevCluster *v1alpha1.ClusterIdentifier
 	for _, app := range appsList.Items {
-		if prevServer != app.Spec.Destination.Server {
-			if prevServer != "" {
-				if clusterCache, err := stateCache.GetClusterCache(prevServer); err == nil {
+		if !app.Spec.Destination.GetClusterIdentifier().Equals(prevCluster) {
+			if prevCluster != nil {
+				if clusterCache, err := stateCache.GetClusterCache(prevCluster); err == nil {
 					clusterCache.Invalidate()
 				}
 			}
-			printLine("Reconciling apps of %s", app.Spec.Destination.Server)
-			prevServer = app.Spec.Destination.Server
+			printLine("Reconciling apps of %s", app.Spec.Destination.GetClusterIdentifier().GetKey())
+			prevCluster = app.Spec.Destination.GetClusterIdentifier()
 		}
 		printLine(app.Name)
 

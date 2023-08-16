@@ -80,12 +80,12 @@ func (c *Cache) GetRepoConnectionState(repo string) (appv1.ConnectionState, erro
 	return res, err
 }
 
-func (c *Cache) GetClusterInfo(server string, res *appv1.ClusterInfo) error {
-	return c.cache.GetClusterInfo(server, res)
+func (c *Cache) GetClusterInfo(clusterId *appv1.ClusterIdentifier, res *appv1.ClusterInfo) error {
+	return c.cache.GetClusterInfo(clusterId, res)
 }
 
-func (c *Cache) SetClusterInfo(server string, res *appv1.ClusterInfo) error {
-	return c.cache.SetClusterInfo(server, res)
+func (c *Cache) SetClusterInfo(clusterId *appv1.ClusterIdentifier, res *appv1.ClusterInfo) error {
+	return c.cache.SetClusterInfo(clusterId, res)
 }
 
 func (c *Cache) GetCache() *cacheutil.Cache {

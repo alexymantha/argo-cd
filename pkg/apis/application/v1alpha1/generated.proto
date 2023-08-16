@@ -765,6 +765,12 @@ message ClusterGenerator {
   map<string, string> values = 3;
 }
 
+message ClusterIdentifier {
+  optional string server = 1;
+
+  optional string name = 2;
+}
+
 // ClusterInfo contains information about the cluster
 message ClusterInfo {
   // ConnectionState contains information about the connection to the cluster
