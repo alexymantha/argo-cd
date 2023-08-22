@@ -16,6 +16,7 @@ type ArgoprojV1alpha1Interface interface {
 	ApplicationsGetter
 	ApplicationSetsGetter
 	ApplicationSetSyncStrategiesGetter
+	ClusterApplicationSetSyncStrategiesGetter
 }
 
 // ArgoprojV1alpha1Client is used to interact with features provided by the argoproj.io group.
@@ -37,6 +38,10 @@ func (c *ArgoprojV1alpha1Client) ApplicationSets(namespace string) ApplicationSe
 
 func (c *ArgoprojV1alpha1Client) ApplicationSetSyncStrategies(namespace string) ApplicationSetSyncStrategyInterface {
 	return newApplicationSetSyncStrategies(c, namespace)
+}
+
+func (c *ArgoprojV1alpha1Client) ClusterApplicationSetSyncStrategies(namespace string) ClusterApplicationSetSyncStrategyInterface {
+	return newClusterApplicationSetSyncStrategies(c, namespace)
 }
 
 // NewForConfig creates a new ArgoprojV1alpha1Client for the given config.

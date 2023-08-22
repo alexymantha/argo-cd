@@ -28,6 +28,10 @@ func (c *FakeArgoprojV1alpha1) ApplicationSetSyncStrategies(namespace string) v1
 	return &FakeApplicationSetSyncStrategies{c, namespace}
 }
 
+func (c *FakeArgoprojV1alpha1) ClusterApplicationSetSyncStrategies(namespace string) v1alpha1.ClusterApplicationSetSyncStrategyInterface {
+	return &FakeClusterApplicationSetSyncStrategies{c, namespace}
+}
+
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
 func (c *FakeArgoprojV1alpha1) RESTClient() rest.Interface {

@@ -318,8 +318,7 @@ message ApplicationSetSyncPolicy {
 // +genclient
 // +genclient:noStatus
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-// +kubebuilder:resource:path=syncstrategies
-// +kubebuilder:subresource:status
+// +kubebuilder:resource:path=applicationsetsyncstrategies,shortName=syncstrategy;syncstrategies
 message ApplicationSetSyncStrategy {
   optional k8s.io.apimachinery.pkg.apis.meta.v1.ObjectMeta metadata = 1;
 
@@ -743,6 +742,25 @@ message Cluster {
 
   // Annotations for cluster secret metadata
   map<string, string> annotations = 13;
+}
+
+// ClusterSyncStrategy is a set of Application resources
+// +genclient
+// +genclient:noStatus
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +kubebuilder:resource:scope=Cluster,path=clusterapplicationsetsyncstrategies,shortName=clustersyncstrategy;clustersyncstrategies
+message ClusterApplicationSetSyncStrategy {
+  optional k8s.io.apimachinery.pkg.apis.meta.v1.ObjectMeta metadata = 1;
+
+  optional ApplicationSetSyncStrategySpec spec = 2;
+}
+
+// ApplicationSetSyncStrategyList is list of AppProject resources
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+message ClusterApplicationSetSyncStrategyList {
+  optional k8s.io.apimachinery.pkg.apis.meta.v1.ListMeta metadata = 1;
+
+  repeated ClusterApplicationSetSyncStrategy items = 2;
 }
 
 // ClusterCacheInfo contains information about the cluster cache

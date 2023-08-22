@@ -33,3 +33,11 @@ type ApplicationSetSyncStrategyListerExpansion interface{}
 // ApplicationSetSyncStrategyNamespaceListerExpansion allows custom methods to be added to
 // ApplicationSetSyncStrategyNamespaceLister.
 type ApplicationSetSyncStrategyNamespaceListerExpansion interface{}
+
+// ClusterApplicationSetSyncStrategyListerExpansion allows custom methods to be added to
+// ClusterApplicationSetSyncStrategyLister.
+type ClusterApplicationSetSyncStrategyListerExpansion interface{}
+
+// ClusterApplicationSetSyncStrategyNamespaceListerExpansion allows custom methods to be added to
+// ClusterApplicationSetSyncStrategyNamespaceLister.
+type ClusterApplicationSetSyncStrategyNamespaceListerExpansion interface{}

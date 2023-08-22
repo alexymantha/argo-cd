@@ -6124,7 +6124,7 @@
     },
     "v1alpha1ApplicationSetSyncStrategy": {
       "type": "object",
-      "title": "ApplicationSetSyncStrategy is a set of Application resources\n+genclient\n+genclient:noStatus\n+k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object\n+kubebuilder:resource:path=syncstrategies\n+kubebuilder:subresource:status",
+      "title": "ApplicationSetSyncStrategy is a set of Application resources\n+genclient\n+genclient:noStatus\n+k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object\n+kubebuilder:resource:path=applicationsetsyncstrategies,shortName=syncstrategy;syncstrategies",
       "properties": {
         "metadata": {
           "$ref": "#/definitions/v1ObjectMeta"

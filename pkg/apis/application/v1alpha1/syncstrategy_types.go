@@ -17,9 +17,27 @@ type ApplicationSetSyncStrategyList struct {
 // +genclient
 // +genclient:noStatus
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-// +kubebuilder:resource:path=syncstrategies
-// +kubebuilder:subresource:status
+// +kubebuilder:resource:path=applicationsetsyncstrategies,shortName=syncstrategy;syncstrategies
 type ApplicationSetSyncStrategy struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata" protobuf:"bytes,1,opt,name=metadata"`
+	Spec              ApplicationSetSyncStrategySpec `json:"spec" protobuf:"bytes,2,opt,name=spec"`
+}
+
+// ApplicationSetSyncStrategyList is list of AppProject resources
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+type ClusterApplicationSetSyncStrategyList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata" protobuf:"bytes,1,opt,name=metadata"`
+	Items           []ClusterApplicationSetSyncStrategy `json:"items" protobuf:"bytes,2,rep,name=items"`
+}
+
+// ClusterSyncStrategy is a set of Application resources
+// +genclient
+// +genclient:noStatus
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +kubebuilder:resource:scope=Cluster,path=clusterapplicationsetsyncstrategies,shortName=clustersyncstrategy;clustersyncstrategies
+type ClusterApplicationSetSyncStrategy struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata" protobuf:"bytes,1,opt,name=metadata"`
 	Spec              ApplicationSetSyncStrategySpec `json:"spec" protobuf:"bytes,2,opt,name=spec"`

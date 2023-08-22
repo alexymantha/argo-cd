@@ -9,3 +9,5 @@ type ApplicationExpansion interface{}
 type ApplicationSetExpansion interface{}
 
 type ApplicationSetSyncStrategyExpansion interface{}
+
+type ClusterApplicationSetSyncStrategyExpansion interface{}
