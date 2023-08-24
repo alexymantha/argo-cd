@@ -157,7 +157,7 @@ func (r *ApplicationSetReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 	// appSyncMap tracks which apps will be synced during this reconciliation.
 	appSyncMap := map[string]bool{}
 
-	strategy, err := r.getApplicationSetStrategy(ctx, &applicationSetInfo)
+	strategy, err := r.getApplicationSetStrategySpec(ctx, &applicationSetInfo)
 	if err != nil {
 		log.Errorf("failed to get application set syncstrategy: %v", err)
 	}
@@ -1425,28 +1425,45 @@ func shouldRequeueApplicationSet(appOld *argov1alpha1.Application, appNew *argov
 	return false
 }
 
-func (r *ApplicationSetReconciler) getStrategyRef(ctx context.Context, ref *argov1alpha1.ApplicationSetSyncStrategyRef, namespace string) (*argov1alpha1.ApplicationSetSyncStrategy, error) {
+func (r *ApplicationSetReconciler) getStrategySpecFromRef(ctx context.Context, ref *argov1alpha1.ApplicationSetSyncStrategyRef, namespace string) (*argov1alpha1.ApplicationSetSyncStrategySpec, error) {
 	if ref == nil {
 		return nil, nil
 	}
 
-	spec := &argov1alpha1.ApplicationSetSyncStrategy{}
-	err := r.Get(
-		ctx,
-		types.NamespacedName{
-			Namespace: namespace,
-			Name:      ref.Name,
-		},
-		spec)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching syncstrategy %s/%s: %v", namespace, ref.Name, err)
+	var spec *argov1alpha1.ApplicationSetSyncStrategySpec
+	if ref.Kind == application.ClusterApplicationSetSyncStrategyKind {
+		css := &argov1alpha1.ClusterApplicationSetSyncStrategy{}
+		err := r.Get(
+			ctx,
+			types.NamespacedName{
+				Name: ref.Name,
+			},
+			css)
+		if err != nil {
+			return nil, fmt.Errorf("error fetching clustersyncstrategy %s: %v", ref.Name, err)
+		}
+
+		spec = &css.Spec
+	} else {
+		ss := &argov1alpha1.ApplicationSetSyncStrategy{}
+		err := r.Get(
+			ctx,
+			types.NamespacedName{
+				Name:      ref.Name,
+				Namespace: namespace,
+			},
+			ss)
+		if err != nil {
+			return nil, fmt.Errorf("error fetching syncstrategy %s/%s: %v", namespace, ref.Name, err)
+		}
+
+		spec = &ss.Spec
 	}
 
 	return spec, nil
 }
 
-func (r *ApplicationSetReconciler) getApplicationSetStrategy(ctx context.Context, appset *argov1alpha1.ApplicationSet) (*argov1alpha1.ApplicationSetSyncStrategySpec, error) {
-
+func (r *ApplicationSetReconciler) getApplicationSetStrategySpec(ctx context.Context, appset *argov1alpha1.ApplicationSet) (*argov1alpha1.ApplicationSetSyncStrategySpec, error) {
 	if appset.Spec.Strategy != nil {
 		return &appset.Spec.Strategy.Spec, nil
 	}
@@ -1455,12 +1472,12 @@ func (r *ApplicationSetReconciler) getApplicationSetStrategy(ctx context.Context
 		return nil, nil
 	}
 
-	strategy, err := r.getStrategyRef(ctx, appset.Spec.StrategyRef, appset.Namespace)
+	spec, err := r.getStrategySpecFromRef(ctx, appset.Spec.StrategyRef, appset.Namespace)
 	if err != nil {
 		return nil, err
 	}
 
-	return &strategy.Spec, nil
+	return spec, nil
 }
 
 var _ handler.EventHandler = &clusterSecretEventHandler{}
