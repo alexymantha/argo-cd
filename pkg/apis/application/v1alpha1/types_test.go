@@ -1142,8 +1142,8 @@ func TestRepository_CopySettingsFrom(t *testing.T) {
 
 func TestSyncStrategy_Force(t *testing.T) {
 	type fields struct {
-		Apply *SyncActionApply
-		Hook  *SyncActionHook
+		Apply *SyncOperationStrategyApply
+		Hook  *SyncOperationStrategyHook
 	}
 	tests := []struct {
 		name   string
@@ -1151,14 +1151,14 @@ func TestSyncStrategy_Force(t *testing.T) {
 		want   bool
 	}{
 		{"TestZero", fields{}, false},
-		{"TestApply", fields{Apply: &SyncActionApply{}}, false},
-		{"TestForceApply", fields{Apply: &SyncActionApply{Force: true}}, true},
-		{"TestHook", fields{Hook: &SyncActionHook{}}, false},
-		{"TestForceHook", fields{Hook: &SyncActionHook{SyncActionApply{Force: true}}}, true},
+		{"TestApply", fields{Apply: &SyncOperationStrategyApply{}}, false},
+		{"TestForceApply", fields{Apply: &SyncOperationStrategyApply{Force: true}}, true},
+		{"TestHook", fields{Hook: &SyncOperationStrategyHook{}}, false},
+		{"TestForceHook", fields{Hook: &SyncOperationStrategyHook{SyncOperationStrategyApply{Force: true}}}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &SyncActions{
+			m := &SyncOperationStrategy{
 				Apply: tt.fields.Apply,
 				Hook:  tt.fields.Hook,
 			}
@@ -1171,7 +1171,7 @@ func TestSyncStrategy_Force(t *testing.T) {
 
 func TestSyncOperation_IsApplyStrategy(t *testing.T) {
 	type fields struct {
-		SyncStrategy *SyncActions
+		SyncStrategy *SyncOperationStrategy
 	}
 	tests := []struct {
 		name   string
@@ -1179,13 +1179,13 @@ func TestSyncOperation_IsApplyStrategy(t *testing.T) {
 		want   bool
 	}{
 		{"TestZero", fields{}, false},
-		{"TestSyncStrategy", fields{SyncStrategy: &SyncActions{}}, false},
-		{"TestApplySyncStrategy", fields{SyncStrategy: &SyncActions{Apply: &SyncActionApply{}}}, true},
+		{"TestSyncStrategy", fields{SyncStrategy: &SyncOperationStrategy{}}, false},
+		{"TestApplySyncStrategy", fields{SyncStrategy: &SyncOperationStrategy{Apply: &SyncOperationStrategyApply{}}}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			o := &SyncOperation{
-				SyncActions: tt.fields.SyncStrategy,
+				SyncStrategy: tt.fields.SyncStrategy,
 			}
 			if got := o.IsApplyStrategy(); got != tt.want {
 				t.Errorf("SyncOperation.IsApplyStrategy() = %v, want %v", got, tt.want)
