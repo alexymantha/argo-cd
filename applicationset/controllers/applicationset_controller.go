@@ -1434,10 +1434,13 @@ func (r *ApplicationSetReconciler) getStrategySpecFromRef(ctx context.Context, r
 		return nil, nil
 	}
 
+<<<<<<< HEAD
 	if ref.Kind != application.ClusterSyncStrategyKind && ref.Kind != application.SyncStrategyKind {
 		return nil, fmt.Errorf("unsupported kind for strategy: %s", ref.Kind)
 	}
 
+=======
+>>>>>>> e7158db84 (fix tests)
 	var spec *argov1alpha1.SyncStrategySpec
 	if ref.Kind == application.ClusterSyncStrategyKind {
 		css := &argov1alpha1.ClusterSyncStrategy{}
