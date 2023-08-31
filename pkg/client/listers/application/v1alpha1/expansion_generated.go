@@ -26,18 +26,18 @@ type ApplicationSetListerExpansion interface{}
 // ApplicationSetNamespaceLister.
 type ApplicationSetNamespaceListerExpansion interface{}
 
-// ApplicationSetSyncStrategyListerExpansion allows custom methods to be added to
-// ApplicationSetSyncStrategyLister.
-type ApplicationSetSyncStrategyListerExpansion interface{}
+// ClusterSyncStrategyListerExpansion allows custom methods to be added to
+// ClusterSyncStrategyLister.
+type ClusterSyncStrategyListerExpansion interface{}
 
-// ApplicationSetSyncStrategyNamespaceListerExpansion allows custom methods to be added to
-// ApplicationSetSyncStrategyNamespaceLister.
-type ApplicationSetSyncStrategyNamespaceListerExpansion interface{}
+// ClusterSyncStrategyNamespaceListerExpansion allows custom methods to be added to
+// ClusterSyncStrategyNamespaceLister.
+type ClusterSyncStrategyNamespaceListerExpansion interface{}
 
-// ClusterApplicationSetSyncStrategyListerExpansion allows custom methods to be added to
-// ClusterApplicationSetSyncStrategyLister.
-type ClusterApplicationSetSyncStrategyListerExpansion interface{}
+// SyncStrategyListerExpansion allows custom methods to be added to
+// SyncStrategyLister.
+type SyncStrategyListerExpansion interface{}
 
-// ClusterApplicationSetSyncStrategyNamespaceListerExpansion allows custom methods to be added to
-// ClusterApplicationSetSyncStrategyNamespaceLister.
-type ClusterApplicationSetSyncStrategyNamespaceListerExpansion interface{}
+// SyncStrategyNamespaceListerExpansion allows custom methods to be added to
+// SyncStrategyNamespaceLister.
+type SyncStrategyNamespaceListerExpansion interface{}

@@ -5,61 +5,62 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
-// ApplicationSetSyncStrategyList is list of AppProject resources
+// SyncStrategyList is list of SyncStrategy resources
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-type ApplicationSetSyncStrategyList struct {
+type SyncStrategyList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata" protobuf:"bytes,1,opt,name=metadata"`
-	Items           []ApplicationSetSyncStrategy `json:"items" protobuf:"bytes,2,rep,name=items"`
+	Items           []SyncStrategy `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
 
-// ApplicationSetSyncStrategy is a set of Application resources
+// SyncStrategy defines a strategy to sync Applications from an ApplicationSet
 // +genclient
 // +genclient:noStatus
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-// +kubebuilder:resource:path=applicationsetsyncstrategies,shortName=syncstrategy;syncstrategies
-type ApplicationSetSyncStrategy struct {
+// +kubebuilder:resource:path=syncstrategies,shortName=syncstrategy;syncstrategies
+type SyncStrategy struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata" protobuf:"bytes,1,opt,name=metadata"`
-	Spec              ApplicationSetSyncStrategySpec `json:"spec" protobuf:"bytes,2,opt,name=spec"`
+	Spec              SyncStrategySpec `json:"spec" protobuf:"bytes,2,opt,name=spec"`
 }
 
-// ApplicationSetSyncStrategyList is list of AppProject resources
+// ClusterSyncStrategyList is list of ClusterSyncStrategy resources
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-type ClusterApplicationSetSyncStrategyList struct {
+type ClusterSyncStrategyList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata" protobuf:"bytes,1,opt,name=metadata"`
-	Items           []ClusterApplicationSetSyncStrategy `json:"items" protobuf:"bytes,2,rep,name=items"`
+	Items           []ClusterSyncStrategy `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
 
-// ClusterSyncStrategy is a set of Application resources
+// ClusterSyncStrategy defines a strategy to sync Applications from ApplicationSet
 // +genclient
 // +genclient:noStatus
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-// +kubebuilder:resource:scope=Cluster,path=clusterapplicationsetsyncstrategies,shortName=clustersyncstrategy;clustersyncstrategies
-type ClusterApplicationSetSyncStrategy struct {
+// +kubebuilder:resource:scope=Cluster,path=clustersyncstrategies,shortName=clustersyncstrategy;clustersyncstrategies
+type ClusterSyncStrategy struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata" protobuf:"bytes,1,opt,name=metadata"`
-	Spec              ApplicationSetSyncStrategySpec `json:"spec" protobuf:"bytes,2,opt,name=spec"`
+	Spec              SyncStrategySpec `json:"spec" protobuf:"bytes,2,opt,name=spec"`
 }
 
-type ApplicationSetSyncStrategyRef struct {
+// Utility struct for a reference to a sync strategy.
+type SyncStrategyRef struct {
 	Kind string `json:"kind,omitempty" protobuf:"bytes,1,opt,name=kind"`
 	Name string `json:"name,omitempty" protobuf:"bytes,2,name=name"`
 }
 
-// ApplicationSetSyncStrategyStrategy configures how generated Applications are updated in sequence.
-type ApplicationSetSyncStrategySpec struct {
-	Type        string                                     `json:"type,omitempty" protobuf:"bytes,1,opt,name=type"`
-	RollingSync *ApplicationSetSyncStrategyRolloutStrategy `json:"rollingSync,omitempty" protobuf:"bytes,2,opt,name=rollingSync"`
+// SyncStrategySpec configures how generated Applications are updated in sequence.
+type SyncStrategySpec struct {
+	Type        string                       `json:"type,omitempty" protobuf:"bytes,1,opt,name=type"`
+	RollingSync *SyncStrategyRolloutStrategy `json:"rollingSync,omitempty" protobuf:"bytes,2,opt,name=rollingSync"`
 	// RollingUpdate *ApplicationSetSyncStrategyRolloutStrategy `json:"rollingUpdate,omitempty" protobuf:"bytes,3,opt,name=rollingUpdate"`
 }
 
-type ApplicationSetSyncStrategyRolloutStrategy struct {
-	Steps []ApplicationSetSyncStrategyRolloutStep `json:"steps,omitempty" protobuf:"bytes,1,opt,name=steps"`
+type SyncStrategyRolloutStrategy struct {
+	Steps []SyncStrategyRolloutStep `json:"steps,omitempty" protobuf:"bytes,1,opt,name=steps"`
 }
 
-type ApplicationSetSyncStrategyRolloutStep struct {
+type SyncStrategyRolloutStep struct {
 	MatchExpressions []ApplicationMatchExpression `json:"matchExpressions,omitempty" protobuf:"bytes,1,opt,name=matchExpressions"`
 	MaxUpdate        *intstr.IntOrString          `json:"maxUpdate,omitempty" protobuf:"bytes,2,opt,name=maxUpdate"`
 }

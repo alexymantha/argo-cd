@@ -14,10 +14,10 @@ type Interface interface {
 	Applications() ApplicationInformer
 	// ApplicationSets returns a ApplicationSetInformer.
 	ApplicationSets() ApplicationSetInformer
-	// ApplicationSetSyncStrategies returns a ApplicationSetSyncStrategyInformer.
-	ApplicationSetSyncStrategies() ApplicationSetSyncStrategyInformer
-	// ClusterApplicationSetSyncStrategies returns a ClusterApplicationSetSyncStrategyInformer.
-	ClusterApplicationSetSyncStrategies() ClusterApplicationSetSyncStrategyInformer
+	// ClusterSyncStrategies returns a ClusterSyncStrategyInformer.
+	ClusterSyncStrategies() ClusterSyncStrategyInformer
+	// SyncStrategies returns a SyncStrategyInformer.
+	SyncStrategies() SyncStrategyInformer
 }
 
 type version struct {
@@ -46,12 +46,12 @@ func (v *version) ApplicationSets() ApplicationSetInformer {
 	return &applicationSetInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// ApplicationSetSyncStrategies returns a ApplicationSetSyncStrategyInformer.
-func (v *version) ApplicationSetSyncStrategies() ApplicationSetSyncStrategyInformer {
-	return &applicationSetSyncStrategyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+// ClusterSyncStrategies returns a ClusterSyncStrategyInformer.
+func (v *version) ClusterSyncStrategies() ClusterSyncStrategyInformer {
+	return &clusterSyncStrategyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// ClusterApplicationSetSyncStrategies returns a ClusterApplicationSetSyncStrategyInformer.
-func (v *version) ClusterApplicationSetSyncStrategies() ClusterApplicationSetSyncStrategyInformer {
-	return &clusterApplicationSetSyncStrategyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+// SyncStrategies returns a SyncStrategyInformer.
+func (v *version) SyncStrategies() SyncStrategyInformer {
+	return &syncStrategyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

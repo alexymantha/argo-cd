@@ -8,6 +8,6 @@ type ApplicationExpansion interface{}
 
 type ApplicationSetExpansion interface{}
 
-type ApplicationSetSyncStrategyExpansion interface{}
+type ClusterSyncStrategyExpansion interface{}
 
-type ClusterApplicationSetSyncStrategyExpansion interface{}
+type SyncStrategyExpansion interface{}
