@@ -261,7 +261,7 @@ message CompareRevisionsRequest {
     repeated string paths = 4;
 }
 
-message ManifestGeneratePathsResponse {
+message CompareRevisionsResponse {
     bool changed = 1;
 }
 
