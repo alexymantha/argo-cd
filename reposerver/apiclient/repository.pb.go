@@ -2144,8 +2144,8 @@ func (m *GitDirectoriesResponse) GetPaths() []string {
 
 type CompareRevisionsRequest struct {
 	Repo                 *v1alpha1.Repository `protobuf:"bytes,1,opt,name=repo,proto3" json:"repo,omitempty"`
-	CurrentRevision      string               `protobuf:"bytes,2,opt,name=currentRevision,proto3" json:"currentRevision,omitempty"`
-	NewRevision          string               `protobuf:"bytes,3,opt,name=newRevision,proto3" json:"newRevision,omitempty"`
+	SyncedRevision      string               `protobuf:"bytes,2,opt,name=currentRevision,proto3" json:"currentRevision,omitempty"`
+	Revision          string               `protobuf:"bytes,3,opt,name=newRevision,proto3" json:"newRevision,omitempty"`
 	Paths                []string             `protobuf:"bytes,4,rep,name=paths,proto3" json:"paths,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
@@ -2194,14 +2194,14 @@ func (m *CompareRevisionsRequest) GetRepo() *v1alpha1.Repository {
 
 func (m *CompareRevisionsRequest) GetCurrentRevision() string {
 	if m != nil {
-		return m.CurrentRevision
+		return m.SyncedRevision
 	}
 	return ""
 }
 
 func (m *CompareRevisionsRequest) GetNewRevision() string {
 	if m != nil {
-		return m.NewRevision
+		return m.Revision
 	}
 	return ""
 }
@@ -5064,17 +5064,17 @@ func (m *CompareRevisionsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error)
 			dAtA[i] = 0x22
 		}
 	}
-	if len(m.NewRevision) > 0 {
-		i -= len(m.NewRevision)
-		copy(dAtA[i:], m.NewRevision)
-		i = encodeVarintRepository(dAtA, i, uint64(len(m.NewRevision)))
+	if len(m.Revision) > 0 {
+		i -= len(m.Revision)
+		copy(dAtA[i:], m.Revision)
+		i = encodeVarintRepository(dAtA, i, uint64(len(m.Revision)))
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.CurrentRevision) > 0 {
-		i -= len(m.CurrentRevision)
-		copy(dAtA[i:], m.CurrentRevision)
-		i = encodeVarintRepository(dAtA, i, uint64(len(m.CurrentRevision)))
+	if len(m.SyncedRevision) > 0 {
+		i -= len(m.SyncedRevision)
+		copy(dAtA[i:], m.SyncedRevision)
+		i = encodeVarintRepository(dAtA, i, uint64(len(m.SyncedRevision)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -6029,11 +6029,11 @@ func (m *CompareRevisionsRequest) Size() (n int) {
 		l = m.Repo.Size()
 		n += 1 + l + sovRepository(uint64(l))
 	}
-	l = len(m.CurrentRevision)
+	l = len(m.SyncedRevision)
 	if l > 0 {
 		n += 1 + l + sovRepository(uint64(l))
 	}
-	l = len(m.NewRevision)
+	l = len(m.Revision)
 	if l > 0 {
 		n += 1 + l + sovRepository(uint64(l))
 	}
@@ -11699,7 +11699,7 @@ func (m *CompareRevisionsRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.CurrentRevision = string(dAtA[iNdEx:postIndex])
+			m.SyncedRevision = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -11731,7 +11731,7 @@ func (m *CompareRevisionsRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.NewRevision = string(dAtA[iNdEx:postIndex])
+			m.Revision = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {

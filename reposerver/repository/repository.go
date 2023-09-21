@@ -25,6 +25,7 @@ import (
 	"github.com/argoproj/argo-cd/v2/common"
 	"github.com/argoproj/argo-cd/v2/util/io/files"
 	"github.com/argoproj/argo-cd/v2/util/manifeststream"
+	"github.com/argoproj/argo-cd/v2/util/security"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/TomOnTime/utfutil"
@@ -822,6 +823,7 @@ func (s *Service) runManifestGenAsync(ctx context.Context, repoRoot, commitSHA, 
 			innerRes.NumberOfConsecutiveFailures++
 			innerRes.MostRecentError = err.Error()
 			cacheErr = s.cache.SetManifests(cacheKey, appSourceCopy, q.RefSources, q, q.Namespace, q.TrackingMethod, q.AppLabelKey, q.AppName, innerRes, refSourceCommitSHAs)
+
 			if cacheErr != nil {
 				logCtx.Warnf("manifest cache set error %s: %v", appSourceCopy.String(), cacheErr)
 				ch.errCh <- cacheErr
@@ -2651,5 +2653,96 @@ func (s *Service) GetGitDirectories(_ context.Context, request *apiclient.GitDir
 
 
 func (s *Service) CompareRevisions(_ context.Context, request *apiclient.CompareRevisionsRequest) (*apiclient.CompareRevisionsResponse, error) {
-  return nil, nil
+  repo := request.GetRepo()
+	revision := request.GetRevision()
+  syncedRevision := request.GetSyncedRevision()
+  refreshPaths := request.GetPaths()
+
+	if repo == nil {
+		return nil, status.Error(codes.InvalidArgument, "must pass a valid repo")
+	}
+
+  if len(refreshPaths) == 0 {
+    // Always refresh if path is not specified
+    return &apiclient.CompareRevisionsResponse{
+      Changed: true,
+    }, nil
+  }
+
+	gitClient, revision, err := s.newClientResolveRevision(repo, revision, git.WithCache(s.cache, true))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "unable to resolve git revision %s: %v", revision, err)
+	}
+
+  _, err = gitClient.LsRemote(syncedRevision)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "unable to resolve git revision %s: %v", revision, err)
+	}
+
+	s.metricsServer.IncPendingRepoRequest(repo.Repo)
+	defer s.metricsServer.DecPendingRepoRequest(repo.Repo)
+
+	// cache miss, generate the results
+	closer, err := s.repoLock.Lock(gitClient.Root(), revision, true, func() (goio.Closer, error) {
+		return s.checkoutRevision(gitClient, revision, false)
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "unable to checkout git repo %s with revision %s: %v", repo.Repo, revision, err)
+	}
+	defer io.Close(closer)
+
+  files, err := gitClient.ChangedFiles(syncedRevision, revision) 
+  if err != nil {
+    return nil, status.Errorf(codes.Internal, "unable to get changed files for repo %s with revision %s: %v", repo.Repo, revision, err)
+  }
+
+  changed := appFilesHaveChanged(refreshPaths, files)
+
+  return &apiclient.CompareRevisionsResponse{
+    Changed: changed,
+  }, nil
 }
+
+//TODO: Share code with webhook
+func appFilesHaveChanged(refreshPaths []string, changedFiles []string) bool {
+	// an empty slice of changed files means that the payload didn't include a list
+	// of changed files and w have to assume that a refresh is required
+	if len(changedFiles) == 0 {
+		return true
+	}
+
+	if len(refreshPaths) == 0 {
+		// Apps without a given refreshed paths always be refreshed, regardless of changed files
+		// this is the "default" behavior
+		return true
+	}
+
+	// At last one changed file must be under refresh path
+	for _, f := range changedFiles {
+		f = ensureAbsPath(f)
+		for _, item := range refreshPaths {
+			item = ensureAbsPath(item)
+			changed := false
+			if f == item {
+				changed = true
+			} else if _, err := security.EnforceToCurrentRoot(item, f); err == nil {
+				changed = true
+			}
+			if changed {
+				log.WithField("paths", refreshPaths).Debugf("Detected files changes in specified paths")
+				return true
+			}
+		}
+	}
+
+	log.WithField("paths", refreshPaths).Debugf("No files changes detected in specified paths")
+	return false
+}
+
+func ensureAbsPath(input string) string {
+	if !filepath.IsAbs(input) {
+		return string(filepath.Separator) + input
+	}
+	return input
+}
+

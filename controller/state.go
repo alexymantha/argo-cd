@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	v1 "k8s.io/api/core/v1"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"time"
+
+	v1 "k8s.io/api/core/v1"
 
 	"github.com/argoproj/gitops-engine/pkg/diff"
 	"github.com/argoproj/gitops-engine/pkg/health"
@@ -180,8 +182,16 @@ func (m *appStateManager) getRepoObjs(app *v1alpha1.Application, sources []v1alp
 		}
 
     // Validate the manifest-generate-path annotation to avoid generating manifests if it has not changed.
+    _, err = repoClient.CompareRevisions(context.Background(), &apiclient.CompareRevisionsRequest{  
+      Repo: repo,
+      Revision: revisions[i],
+      SyncedRevision: app.Status.Sync.Revision,
+      Paths: getAppRefreshPaths(app),
+    })
+    if err != nil {
+      return nil, nil, fmt.Errorf("failed to compare revisions for source %d of %d: %w", i+1, len(sources), err)
+    }
     
-
 		ts.AddCheckpoint("version_ms")
 		log.Debugf("Generating Manifest for source %s revision %s", source, revisions[i])
 		manifestInfo, err := repoClient.GenerateManifest(context.Background(), &apiclient.ManifestRequest{
@@ -229,6 +239,26 @@ func (m *appStateManager) getRepoObjs(app *v1alpha1.Application, sources []v1alp
 	logCtx = logCtx.WithField("time_ms", time.Since(ts.StartTime).Milliseconds())
 	logCtx.Info("getRepoObjs stats")
 	return targetObjs, manifestInfos, nil
+}
+
+//TODO: share this with webhook instead of copy/paste
+func getAppRefreshPaths(app *v1alpha1.Application) []string {
+	var paths []string
+	if val, ok := app.Annotations[v1alpha1.AnnotationKeyManifestGeneratePaths]; ok && val != "" {
+		for _, item := range strings.Split(val, ";") {
+			if item == "" {
+				continue
+			}
+			if filepath.IsAbs(item) {
+				paths = append(paths, item[1:])
+			} else {
+				for _, source := range app.Spec.GetSources() {
+					paths = append(paths, filepath.Clean(filepath.Join(source.Path, item)))
+				}
+			}
+		}
+	}
+	return paths
 }
 
 func unmarshalManifests(manifests []string) ([]*unstructured.Unstructured, error) {

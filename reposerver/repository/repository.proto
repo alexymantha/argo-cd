@@ -256,8 +256,8 @@ message GitDirectoriesResponse {
 
 message CompareRevisionsRequest {
     github.com.argoproj.argo_cd.v2.pkg.apis.application.v1alpha1.Repository repo = 1;
-    string currentRevision = 2;
-    string newRevision = 3;
+    string syncedRevision = 2;
+    string revision = 3;
     repeated string paths = 4;
 }
 
