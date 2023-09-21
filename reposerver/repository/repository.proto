@@ -321,6 +321,6 @@ service RepoServerService {
     }
 
     // GetManifestGeneratePath returns the paths to check for changes during manifest generation
-    rpc GetManifestGeneratePath(ManifestGeneratePathRequest) returns (ManifestGeneratePathResponse) {
+    rpc GetManifestGeneratePaths(ManifestGeneratePathsRequest) returns (ManifestGeneratePathsResponse) {
     }
 }

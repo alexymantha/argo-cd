@@ -2648,3 +2648,8 @@ func (s *Service) GetGitDirectories(_ context.Context, request *apiclient.GitDir
 		Paths: paths,
 	}, nil
 }
+
+
+func (s *Service) GetManifestGeneratePaths(_ context.Context, request *apiclient.ManifestGeneratePathsRequest) (*apiclient.ManifestGeneratePathsResponse, error) {
+  return nil, nil
+}
