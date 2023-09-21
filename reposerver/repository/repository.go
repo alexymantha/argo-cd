@@ -2650,6 +2650,6 @@ func (s *Service) GetGitDirectories(_ context.Context, request *apiclient.GitDir
 }
 
 
-func (s *Service) GetManifestGeneratePaths(_ context.Context, request *apiclient.ManifestGeneratePathsRequest) (*apiclient.ManifestGeneratePathsResponse, error) {
+func (s *Service) CompareRevisions(_ context.Context, request *apiclient.CompareRevisionsRequest) (*apiclient.CompareRevisionsResponse, error) {
   return nil, nil
 }

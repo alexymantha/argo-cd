@@ -254,15 +254,15 @@ message GitDirectoriesResponse {
     repeated string paths = 1;
 }
 
-message ManifestGeneratePathsRequest {
+message CompareRevisionsRequest {
     github.com.argoproj.argo_cd.v2.pkg.apis.application.v1alpha1.Repository repo = 1;
-    string revision = 2;
-    string path = 3;
+    string currentRevision = 2;
+    string newRevision = 3;
+    repeated string paths = 4;
 }
 
 message ManifestGeneratePathsResponse {
-    // A set of paths to check for changes during manifest generation
-    repeated string paths = 1;
+    bool changed = 1;
 }
 
 // ManifestService
@@ -320,7 +320,7 @@ service RepoServerService {
     rpc GetGitDirectories(GitDirectoriesRequest) returns (GitDirectoriesResponse) {
     }
 
-    // GetManifestGeneratePath returns the paths to check for changes during manifest generation
-    rpc GetManifestGeneratePaths(ManifestGeneratePathsRequest) returns (ManifestGeneratePathsResponse) {
+    // CompareRevisions will compare two revisions and return whether there were relevant changes based on the paths provided
+    rpc CompareRevisions(CompareRevisionsRequest) returns (CompareRevisionsResponse) {
     }
 }
