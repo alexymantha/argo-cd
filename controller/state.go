@@ -179,6 +179,9 @@ func (m *appStateManager) getRepoObjs(app *v1alpha1.Application, sources []v1alp
 			return nil, nil, fmt.Errorf("failed to get Kustomize options for source %d of %d: %w", i+1, len(sources), err)
 		}
 
+    // Validate the manifest-generate-path annotation to avoid generating manifests if it has not changed.
+    
+
 		ts.AddCheckpoint("version_ms")
 		log.Debugf("Generating Manifest for source %s revision %s", source, revisions[i])
 		manifestInfo, err := repoClient.GenerateManifest(context.Background(), &apiclient.ManifestRequest{

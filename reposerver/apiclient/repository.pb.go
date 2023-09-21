@@ -2363,6 +2363,8 @@ type RepoServerServiceClient interface {
 	GetGitFiles(ctx context.Context, in *GitFilesRequest, opts ...grpc.CallOption) (*GitFilesResponse, error)
 	// GetGitDirectories returns a set of directory paths for the given repo
 	GetGitDirectories(ctx context.Context, in *GitDirectoriesRequest, opts ...grpc.CallOption) (*GitDirectoriesResponse, error)
+  // GetManifestGeneratePath returns the paths to check for changes when generating a manifest
+  GetManifestGeneratePath(ctx context.Context, in *ManifestGeneratePathRequest, opts ...grpc.CallOption) (*ManifestGeneratePathResponse, error)
 }
 
 type repoServerServiceClient struct {
