@@ -254,13 +254,13 @@ message GitDirectoriesResponse {
     repeated string paths = 1;
 }
 
-message ManifestGeneratePathRequest {
+message ManifestGeneratePathsRequest {
     github.com.argoproj.argo_cd.v2.pkg.apis.application.v1alpha1.Repository repo = 1;
     string revision = 2;
     string path = 3;
 }
 
-message ManifestGeneratePathResponse {
+message ManifestGeneratePathsResponse {
     // A set of paths to check for changes during manifest generation
     repeated string paths = 1;
 }
