@@ -115,7 +115,7 @@ func GetAppRefreshPaths(app *v1alpha1.Application) []string {
 // If refreshPaths is empty, it will always return true
 func AppFilesHaveChanged(refreshPaths []string, changedFiles []string) bool {
 	// empty slice means there was no changes to any files
-  // so we should not refresh
+	// so we should not refresh
 	if len(changedFiles) == 0 {
 		return false
 	}
@@ -152,4 +152,3 @@ func ensureAbsPath(input string) string {
 	}
 	return input
 }
-

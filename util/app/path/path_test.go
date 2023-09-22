@@ -167,7 +167,7 @@ func Test_AppFilesHaveChanged(t *testing.T) {
 		ttc := tt
 		t.Run(ttc.name, func(t *testing.T) {
 			t.Parallel()
-      refreshPaths := GetAppRefreshPaths(ttc.app)
+			refreshPaths := GetAppRefreshPaths(ttc.app)
 			if got := AppFilesHaveChanged(refreshPaths, ttc.files); got != ttc.changeExpected {
 				t.Errorf("AppFilesHaveChanged() = %v, want %v", got, ttc.changeExpected)
 			}

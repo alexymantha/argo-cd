@@ -2656,34 +2656,34 @@ func (s *Service) GetGitDirectories(_ context.Context, request *apiclient.GitDir
 // Example: cache has key "a1a1a1" with manifest "x", and the files for that manifest have not changed,
 // "x" will be stored again with the new revision "b2b2b2".
 func (s *Service) CompareRevisions(_ context.Context, request *apiclient.CompareRevisionsRequest) (*apiclient.CompareRevisionsResponse, error) {
-  repo := request.GetRepo()
+	repo := request.GetRepo()
 	revision := request.GetRevision()
-  syncedRevision := request.GetSyncedRevision()
-  refreshPaths := request.GetPaths()
+	syncedRevision := request.GetSyncedRevision()
+	refreshPaths := request.GetPaths()
 
 	if repo == nil {
 		return nil, status.Error(codes.InvalidArgument, "must pass a valid repo")
 	}
 
-  if len(refreshPaths) == 0 {
-    // Always refresh if path is not specified
-    return &apiclient.CompareRevisionsResponse{}, nil
-  }
-  
+	if len(refreshPaths) == 0 {
+		// Always refresh if path is not specified
+		return &apiclient.CompareRevisionsResponse{}, nil
+	}
+
 	gitClient, revision, err := s.newClientResolveRevision(repo, revision, git.WithCache(s.cache, true))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "unable to resolve git revision %s: %v", revision, err)
 	}
 
-  syncedRevision, err = gitClient.LsRemote(syncedRevision)
+	syncedRevision, err = gitClient.LsRemote(syncedRevision)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "unable to resolve git revision %s: %v", revision, err)
 	}
 
-  // No need to compare if it is the same revision
-  if revision == syncedRevision {
-    return &apiclient.CompareRevisionsResponse{}, nil 
-  }
+	// No need to compare if it is the same revision
+	if revision == syncedRevision {
+		return &apiclient.CompareRevisionsResponse{}, nil
+	}
 
 	s.metricsServer.IncPendingRepoRequest(repo.Repo)
 	defer s.metricsServer.DecPendingRepoRequest(repo.Repo)
@@ -2696,32 +2696,30 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
 	}
 	defer io.Close(closer)
 
-  files, err := gitClient.ChangedFiles(syncedRevision, revision) 
-  if err != nil {
-    return nil, status.Errorf(codes.Internal, "unable to get changed files for repo %s with revision %s: %v", repo.Repo, revision, err)
-  }
+	files, err := gitClient.ChangedFiles(syncedRevision, revision)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "unable to get changed files for repo %s with revision %s: %v", repo.Repo, revision, err)
+	}
 
-  changed := apppathutil.AppFilesHaveChanged(refreshPaths, files)
+	changed := apppathutil.AppFilesHaveChanged(refreshPaths, files)
 
-  if !changed {
-    refSourceCommitSHAs := make(map[string]string)
-    manifest := &cache.CachedManifestResponse{}
-    err := s.cache.GetManifests(syncedRevision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
-    if err != nil && err != cache.ErrCacheMiss {
-      log.Warnf("manifest cache get error %s: %v", request.ApplicationSource.String(), err)
-      return  &apiclient.CompareRevisionsResponse{}, nil
-    }
+	if !changed {
+		refSourceCommitSHAs := make(map[string]string)
+		manifest := &cache.CachedManifestResponse{}
+		err := s.cache.GetManifests(syncedRevision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
+		if err != nil && err != cache.ErrCacheMiss {
+			log.Warnf("manifest cache get error %s: %v", request.ApplicationSource.String(), err)
+			return &apiclient.CompareRevisionsResponse{}, nil
+		}
 
-    err = s.cache.SetManifests(revision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
-    if err != nil {
-      log.Warnf("manifest cache set error %s: %v", request.ApplicationSource.String(), err)
-      return &apiclient.CompareRevisionsResponse{}, nil
-    }
+		err = s.cache.SetManifests(revision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
+		if err != nil {
+			log.Warnf("manifest cache set error %s: %v", request.ApplicationSource.String(), err)
+			return &apiclient.CompareRevisionsResponse{}, nil
+		}
 
-    log.Debugf("manifest cache updated for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
-  }
+		log.Debugf("manifest cache updated for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
+	}
 
-  return &apiclient.CompareRevisionsResponse{}, nil
+	return &apiclient.CompareRevisionsResponse{}, nil
 }
-
-

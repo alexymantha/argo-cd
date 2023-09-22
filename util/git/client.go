@@ -73,7 +73,7 @@ type Client interface {
 	RevisionMetadata(revision string) (*RevisionMetadata, error)
 	VerifyCommitSignature(string) (string, error)
 	IsAnnotatedTag(string) bool
-  ChangedFiles(revision string, targetRevision string) ([]string, error)
+	ChangedFiles(revision string, targetRevision string) ([]string, error)
 }
 
 type EventHandlers struct {
@@ -678,14 +678,13 @@ func (m *nativeGitClient) ChangedFiles(revision string, targetRevision string) (
 		return nil, err
 	}
 
-  if out == "" {
-    return []string{}, nil
-  }
+	if out == "" {
+		return []string{}, nil
+	}
 
-  files := strings.Split(out, "\n")
-  return files, nil
+	files := strings.Split(out, "\n")
+	return files, nil
 }
-
 
 // runWrapper runs a custom command with all the semantics of running the Git client
 func (m *nativeGitClient) runGnuPGWrapper(wrapper string, args ...string) (string, error) {
