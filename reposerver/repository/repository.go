@@ -2702,14 +2702,14 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
   changed := appFilesHaveChanged(refreshPaths, files)
 
   if !changed {
-   /* innerRes := &cache.CachedManifestResponse{}
-    err := s.cache.GetManifests(cacheKey, appSourceCopy, q.RefSources, q, q.Namespace, q.TrackingMethod, q.AppLabelKey, q.AppName, innerRes, refSourceCommitSHAs)
+   /* manifest := &cache.CachedManifestResponse{}
+    err := s.cache.GetManifests(syncedRevision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
     if err != nil && err != cache.ErrCacheMiss {
-      log.Warnf("manifest cache get error %s: %v", appSourceCopy.String(), cacheErr)
+      log.Warnf("manifest cache get error %s: %v", request.ApplicationSource.String(), err)
       return  &apiclient.CompareRevisionsResponse{}, nil
     }
 
-    err = s.cache.SetManifests(revision, appSourceCopy, q.RefSources, q, q.Namespace, q.TrackingMethod, q.AppLabelKey, q.AppName, innerRes, refSourceCommitSHAs)
+    err = s.cache.SetManifests(revision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
   */
   }
 

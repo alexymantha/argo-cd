@@ -263,10 +263,12 @@ message CompareRevisionsRequest {
     github.com.argoproj.argo_cd.v2.pkg.apis.application.v1alpha1.ApplicationSource applicationSource = 5;
     string trackingMethod = 6;
     map<string, github.com.argoproj.argo_cd.v2.pkg.apis.application.v1alpha1.RefTarget> refSources = 7;
+    string kubeVersion = 8;
+    repeated string apiVersions = 9;
 
-    string syncedRevision = 8;
-    string revision = 9;
-    repeated string paths = 10;
+    string syncedRevision = 10;
+    string revision = 11;
+    repeated string paths = 12;
 }
 
 message CompareRevisionsResponse {
