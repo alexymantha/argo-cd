@@ -25,7 +25,6 @@ import (
 	"github.com/argoproj/argo-cd/v2/common"
 	"github.com/argoproj/argo-cd/v2/util/io/files"
 	"github.com/argoproj/argo-cd/v2/util/manifeststream"
-	"github.com/argoproj/argo-cd/v2/util/security"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/TomOnTime/utfutil"
@@ -52,6 +51,7 @@ import (
 	"github.com/argoproj/argo-cd/v2/reposerver/cache"
 	"github.com/argoproj/argo-cd/v2/reposerver/metrics"
 	"github.com/argoproj/argo-cd/v2/util/app/discovery"
+	apppathutil "github.com/argoproj/argo-cd/v2/util/app/path"
 	argopath "github.com/argoproj/argo-cd/v2/util/app/path"
 	"github.com/argoproj/argo-cd/v2/util/argo"
 	"github.com/argoproj/argo-cd/v2/util/cmp"
@@ -2688,7 +2688,6 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
 	s.metricsServer.IncPendingRepoRequest(repo.Repo)
 	defer s.metricsServer.DecPendingRepoRequest(repo.Repo)
 
-	// cache miss, generate the results
 	closer, err := s.repoLock.Lock(gitClient.Root(), revision, true, func() (goio.Closer, error) {
 		return s.checkoutRevision(gitClient, revision, false)
 	})
@@ -2702,7 +2701,7 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
     return nil, status.Errorf(codes.Internal, "unable to get changed files for repo %s with revision %s: %v", repo.Repo, revision, err)
   }
 
-  changed := appFilesHaveChanged(refreshPaths, files)
+  changed := apppathutil.AppFilesHaveChanged(refreshPaths, files)
 
   if !changed {
     refSourceCommitSHAs := make(map[string]string)
@@ -2714,51 +2713,15 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
     }
 
     err = s.cache.SetManifests(revision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
+    if err != nil {
+      log.Warnf("manifest cache set error %s: %v", request.ApplicationSource.String(), err)
+      return &apiclient.CompareRevisionsResponse{}, nil
+    }
+
+    log.Debugf("manifest cache updated for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
   }
 
   return &apiclient.CompareRevisionsResponse{}, nil
 }
 
-//TODO: Share code with webhook
-func appFilesHaveChanged(refreshPaths []string, changedFiles []string) bool {
-	// empty slice means there was no changes to any files
-  // so we should not refresh
-	if len(changedFiles) == 0 {
-		return false
-	}
-
-	if len(refreshPaths) == 0 {
-		// Apps without a given refreshed paths always be refreshed, regardless of changed files
-		// this is the "default" behavior
-		return true
-	}
-
-	// At last one changed file must be under refresh path
-	for _, f := range changedFiles {
-		f = ensureAbsPath(f)
-		for _, item := range refreshPaths {
-			item = ensureAbsPath(item)
-			changed := false
-			if f == item {
-				changed = true
-			} else if _, err := security.EnforceToCurrentRoot(item, f); err == nil {
-				changed = true
-			}
-			if changed {
-				log.WithField("paths", refreshPaths).Debugf("Detected files changes in specified paths")
-				return true
-			}
-		}
-	}
-
-	log.WithField("paths", refreshPaths).Debugf("No files changes detected in specified paths")
-	return false
-}
-
-func ensureAbsPath(input string) string {
-	if !filepath.IsAbs(input) {
-		return string(filepath.Separator) + input
-	}
-	return input
-}
 

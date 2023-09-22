@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"path/filepath"
 	"reflect"
 	"strings"
 	"time"
@@ -32,6 +31,7 @@ import (
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	appclientset "github.com/argoproj/argo-cd/v2/pkg/client/clientset/versioned"
 	"github.com/argoproj/argo-cd/v2/reposerver/apiclient"
+	"github.com/argoproj/argo-cd/v2/util/app/path"
 	"github.com/argoproj/argo-cd/v2/util/argo"
 	argodiff "github.com/argoproj/argo-cd/v2/util/argo/diff"
 	appstatecache "github.com/argoproj/argo-cd/v2/util/cache/appstate"
@@ -188,7 +188,7 @@ func (m *appStateManager) getRepoObjs(app *v1alpha1.Application, sources []v1alp
         Repo: repo,
         Revision: revisions[i],
         SyncedRevision: app.Status.Sync.Revision,
-        Paths: getAppRefreshPaths(app),
+        Paths: path.GetAppRefreshPaths(app),
         AppLabelKey:        appLabelKey,
         AppName:            app.InstanceName(m.namespace),
         Namespace:          app.Spec.Destination.Namespace,
@@ -250,26 +250,6 @@ func (m *appStateManager) getRepoObjs(app *v1alpha1.Application, sources []v1alp
 	logCtx = logCtx.WithField("time_ms", time.Since(ts.StartTime).Milliseconds())
 	logCtx.Info("getRepoObjs stats")
 	return targetObjs, manifestInfos, nil
-}
-
-//TODO: share this with webhook instead of copy/paste
-func getAppRefreshPaths(app *v1alpha1.Application) []string {
-	var paths []string
-	if val, ok := app.Annotations[v1alpha1.AnnotationKeyManifestGeneratePaths]; ok && val != "" {
-		for _, item := range strings.Split(val, ";") {
-			if item == "" {
-				continue
-			}
-			if filepath.IsAbs(item) {
-				paths = append(paths, item[1:])
-			} else {
-				for _, source := range app.Spec.GetSources() {
-					paths = append(paths, filepath.Clean(filepath.Join(source.Path, item)))
-				}
-			}
-		}
-	}
-	return paths
 }
 
 func unmarshalManifests(manifests []string) ([]*unstructured.Unstructured, error) {

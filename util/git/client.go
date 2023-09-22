@@ -678,6 +678,10 @@ func (m *nativeGitClient) ChangedFiles(revision string, targetRevision string) (
 		return nil, err
 	}
 
+  if out == "" {
+    return []string{}, nil
+  }
+
   files := strings.Split(out, "\n")
   return files, nil
 }
