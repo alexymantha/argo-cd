@@ -2651,7 +2651,10 @@ func (s *Service) GetGitDirectories(_ context.Context, request *apiclient.GitDir
 	}, nil
 }
 
-
+// CompareRevisions compares two git revisions and checks if the files in the given paths have changed
+// If no files were changed, it will store the already cached manifest to the key corresponding to the old revision, avoiding an unnecessary generation.
+// Example: cache has key "a1a1a1" with manifest "x", and the files for that manifest have not changed,
+// "x" will be stored again with the new revision "b2b2b2".
 func (s *Service) CompareRevisions(_ context.Context, request *apiclient.CompareRevisionsRequest) (*apiclient.CompareRevisionsResponse, error) {
   repo := request.GetRepo()
 	revision := request.GetRevision()
@@ -2698,17 +2701,27 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
 
   changed := appFilesHaveChanged(refreshPaths, files)
 
-  return &apiclient.CompareRevisionsResponse{
-    Changed: changed,
-  }, nil
+  if !changed {
+   /* innerRes := &cache.CachedManifestResponse{}
+    err := s.cache.GetManifests(cacheKey, appSourceCopy, q.RefSources, q, q.Namespace, q.TrackingMethod, q.AppLabelKey, q.AppName, innerRes, refSourceCommitSHAs)
+    if err != nil && err != cache.ErrCacheMiss {
+      log.Warnf("manifest cache get error %s: %v", appSourceCopy.String(), cacheErr)
+      return  &apiclient.CompareRevisionsResponse{}, nil
+    }
+
+    err = s.cache.SetManifests(revision, appSourceCopy, q.RefSources, q, q.Namespace, q.TrackingMethod, q.AppLabelKey, q.AppName, innerRes, refSourceCommitSHAs)
+  */
+  }
+
+  return &apiclient.CompareRevisionsResponse{}, nil
 }
 
 //TODO: Share code with webhook
 func appFilesHaveChanged(refreshPaths []string, changedFiles []string) bool {
-	// an empty slice of changed files means that the payload didn't include a list
-	// of changed files and w have to assume that a refresh is required
+	// empty slice means there was no changes to any files
+  // so we should not refresh
 	if len(changedFiles) == 0 {
-		return true
+		return false
 	}
 
 	if len(refreshPaths) == 0 {

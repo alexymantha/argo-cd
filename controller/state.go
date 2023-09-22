@@ -181,54 +181,57 @@ func (m *appStateManager) getRepoObjs(app *v1alpha1.Application, sources []v1alp
 			return nil, nil, fmt.Errorf("failed to get Kustomize options for source %d of %d: %w", i+1, len(sources), err)
 		}
 
-    // Validate the manifest-generate-path annotation to avoid generating manifests if it has not changed.
-    _, err = repoClient.CompareRevisions(context.Background(), &apiclient.CompareRevisionsRequest{  
-      Repo: repo,
-      Revision: revisions[i],
-      SyncedRevision: app.Status.Sync.Revision,
-      Paths: getAppRefreshPaths(app),
+    val, ok := app.Annotations[v1alpha1.AnnotationKeyManifestGeneratePaths]
+    if app.Status.Sync.Revision != "" && ok && val != "" {
+      // Validate the manifest-generate-path annotation to avoid generating manifests if it has not changed.
+      _, err = repoClient.CompareRevisions(context.Background(), &apiclient.CompareRevisionsRequest{  
+        Repo: repo,
+        Revision: revisions[i],
+        SyncedRevision: app.Status.Sync.Revision,
+        Paths: getAppRefreshPaths(app),
+      })
+      if err != nil {
+        return nil, nil, fmt.Errorf("failed to compare revisions for source %d of %d: %w", i+1, len(sources), err)
+      }
+    }
+
+    ts.AddCheckpoint("version_ms")
+    log.Debugf("Generating Manifest for source %s revision %s", source, revisions[i])
+    manifestInfo, err := repoClient.GenerateManifest(context.Background(), &apiclient.ManifestRequest{
+      Repo:               repo,
+      Repos:              permittedHelmRepos,
+      Revision:           revisions[i],
+      NoCache:            noCache,
+      NoRevisionCache:    noRevisionCache,
+      AppLabelKey:        appLabelKey,
+      AppName:            app.InstanceName(m.namespace),
+      Namespace:          app.Spec.Destination.Namespace,
+      ApplicationSource:  &source,
+      KustomizeOptions:   kustomizeOptions,
+      KubeVersion:        serverVersion,
+      ApiVersions:        argo.APIResourcesToStrings(apiResources, true),
+      VerifySignature:    verifySignature,
+      HelmRepoCreds:      permittedHelmCredentials,
+      TrackingMethod:     string(argo.GetTrackingMethod(m.settingsMgr)),
+      EnabledSourceTypes: enabledSourceTypes,
+      HelmOptions:        helmOptions,
+      HasMultipleSources: app.Spec.HasMultipleSources(),
+      RefSources:         refSources,
+      ProjectName:        proj.Name,
+      ProjectSourceRepos: proj.Spec.SourceRepos,
     })
     if err != nil {
-      return nil, nil, fmt.Errorf("failed to compare revisions for source %d of %d: %w", i+1, len(sources), err)
+      return nil, nil, fmt.Errorf("failed to generate manifest for source %d of %d: %w", i+1, len(sources), err)
     }
-    
-		ts.AddCheckpoint("version_ms")
-		log.Debugf("Generating Manifest for source %s revision %s", source, revisions[i])
-		manifestInfo, err := repoClient.GenerateManifest(context.Background(), &apiclient.ManifestRequest{
-			Repo:               repo,
-			Repos:              permittedHelmRepos,
-			Revision:           revisions[i],
-			NoCache:            noCache,
-			NoRevisionCache:    noRevisionCache,
-			AppLabelKey:        appLabelKey,
-			AppName:            app.InstanceName(m.namespace),
-			Namespace:          app.Spec.Destination.Namespace,
-			ApplicationSource:  &source,
-			KustomizeOptions:   kustomizeOptions,
-			KubeVersion:        serverVersion,
-			ApiVersions:        argo.APIResourcesToStrings(apiResources, true),
-			VerifySignature:    verifySignature,
-			HelmRepoCreds:      permittedHelmCredentials,
-			TrackingMethod:     string(argo.GetTrackingMethod(m.settingsMgr)),
-			EnabledSourceTypes: enabledSourceTypes,
-			HelmOptions:        helmOptions,
-			HasMultipleSources: app.Spec.HasMultipleSources(),
-			RefSources:         refSources,
-			ProjectName:        proj.Name,
-			ProjectSourceRepos: proj.Spec.SourceRepos,
-		})
-		if err != nil {
-			return nil, nil, fmt.Errorf("failed to generate manifest for source %d of %d: %w", i+1, len(sources), err)
-		}
 
-		targetObj, err := unmarshalManifests(manifestInfo.Manifests)
+    targetObj, err := unmarshalManifests(manifestInfo.Manifests)
 
-		if err != nil {
-			return nil, nil, fmt.Errorf("failed to unmarshal manifests for source %d of %d: %w", i+1, len(sources), err)
-		}
-		targetObjs = append(targetObjs, targetObj...)
+    if err != nil {
+      return nil, nil, fmt.Errorf("failed to unmarshal manifests for source %d of %d: %w", i+1, len(sources), err)
+    }
+    targetObjs = append(targetObjs, targetObj...)
 
-		manifestInfos = append(manifestInfos, manifestInfo)
+    manifestInfos = append(manifestInfos, manifestInfo)
 	}
 
 	ts.AddCheckpoint("unmarshal_ms")

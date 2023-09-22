@@ -259,6 +259,13 @@ message CompareRevisionsRequest {
     string syncedRevision = 2;
     string revision = 3;
     repeated string paths = 4;
+    
+    string appLabelKey = 4;
+    string appName = 5;
+    string namespace = 8;
+    github.com.argoproj.argo_cd.v2.pkg.apis.application.v1alpha1.ApplicationSource applicationSource = 10;
+    string trackingMethod = 19;
+    map<string, github.com.argoproj.argo_cd.v2.pkg.apis.application.v1alpha1.RefTarget> refSources = 23;
 }
 
 message CompareRevisionsResponse {
