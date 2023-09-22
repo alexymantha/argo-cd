@@ -2667,20 +2667,23 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
 
   if len(refreshPaths) == 0 {
     // Always refresh if path is not specified
-    return &apiclient.CompareRevisionsResponse{
-      Changed: true,
-    }, nil
+    return &apiclient.CompareRevisionsResponse{}, nil
   }
-
+  
 	gitClient, revision, err := s.newClientResolveRevision(repo, revision, git.WithCache(s.cache, true))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "unable to resolve git revision %s: %v", revision, err)
 	}
 
-  _, err = gitClient.LsRemote(syncedRevision)
+  syncedRevision, err = gitClient.LsRemote(syncedRevision)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "unable to resolve git revision %s: %v", revision, err)
 	}
+
+  // No need to compare if it is the same revision
+  if revision == syncedRevision {
+    return &apiclient.CompareRevisionsResponse{}, nil 
+  }
 
 	s.metricsServer.IncPendingRepoRequest(repo.Repo)
 	defer s.metricsServer.DecPendingRepoRequest(repo.Repo)
@@ -2702,7 +2705,8 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
   changed := appFilesHaveChanged(refreshPaths, files)
 
   if !changed {
-   /* manifest := &cache.CachedManifestResponse{}
+    refSourceCommitSHAs := make(map[string]string)
+    manifest := &cache.CachedManifestResponse{}
     err := s.cache.GetManifests(syncedRevision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
     if err != nil && err != cache.ErrCacheMiss {
       log.Warnf("manifest cache get error %s: %v", request.ApplicationSource.String(), err)
@@ -2710,7 +2714,6 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
     }
 
     err = s.cache.SetManifests(revision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
-  */
   }
 
   return &apiclient.CompareRevisionsResponse{}, nil

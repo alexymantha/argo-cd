@@ -189,6 +189,14 @@ func (m *appStateManager) getRepoObjs(app *v1alpha1.Application, sources []v1alp
         Revision: revisions[i],
         SyncedRevision: app.Status.Sync.Revision,
         Paths: getAppRefreshPaths(app),
+        AppLabelKey:        appLabelKey,
+        AppName:            app.InstanceName(m.namespace),
+        Namespace:          app.Spec.Destination.Namespace,
+        ApplicationSource:  &source,
+        KubeVersion:        serverVersion,
+        ApiVersions:        argo.APIResourcesToStrings(apiResources, true),
+        TrackingMethod:     string(argo.GetTrackingMethod(m.settingsMgr)),
+        RefSources:         refSources,
       })
       if err != nil {
         return nil, nil, fmt.Errorf("failed to compare revisions for source %d of %d: %w", i+1, len(sources), err)
