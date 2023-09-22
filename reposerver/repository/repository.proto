@@ -262,7 +262,7 @@ message CompareRevisionsRequest {
     string namespace = 4;
     github.com.argoproj.argo_cd.v2.pkg.apis.application.v1alpha1.ApplicationSource applicationSource = 5;
     string trackingMethod = 6;
-    map<string, github.com.argoproj.argo_cd.v2.pkg.apis.application.v1alpha1.RefTarget> refSources = 7
+    map<string, github.com.argoproj.argo_cd.v2.pkg.apis.application.v1alpha1.RefTarget> refSources = 7;
 
     string syncedRevision = 8;
     string revision = 9;
