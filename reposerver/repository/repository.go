@@ -2719,7 +2719,9 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
 		}
 
 		log.Debugf("manifest cache updated for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
-	}
+	} else {
+    log.Debugf("changes found for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
+  }
 
 	return &apiclient.CompareRevisionsResponse{}, nil
 }
