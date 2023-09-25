@@ -273,6 +273,7 @@ message CompareRevisionsRequest {
 
 message CompareRevisionsResponse {
     bool changed = 1;
+    bool updated = 2;
 }
 
 // ManifestService
