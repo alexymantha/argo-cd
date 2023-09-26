@@ -185,18 +185,19 @@ func (m *appStateManager) getRepoObjs(app *v1alpha1.Application, sources []v1alp
 		if app.Status.Sync.Revision != "" && ok && val != "" {
 			// Validate the manifest-generate-path annotation to avoid generating manifests if it has not changed.
 			_, err = repoClient.CompareRevisions(context.Background(), &apiclient.CompareRevisionsRequest{
-				Repo:              repo,
-				Revision:          revisions[i],
-				SyncedRevision:    app.Status.Sync.Revision,
-				Paths:             path.GetAppRefreshPaths(app),
-				AppLabelKey:       appLabelKey,
-				AppName:           app.InstanceName(m.namespace),
-				Namespace:         app.Spec.Destination.Namespace,
-				ApplicationSource: &source,
-				KubeVersion:       serverVersion,
-				ApiVersions:       argo.APIResourcesToStrings(apiResources, true),
-				TrackingMethod:    string(argo.GetTrackingMethod(m.settingsMgr)),
-				RefSources:        refSources,
+				Repo:               repo,
+				Revision:           revisions[i],
+				SyncedRevision:     app.Status.Sync.Revision,
+				Paths:              path.GetAppRefreshPaths(app),
+				AppLabelKey:        appLabelKey,
+				AppName:            app.InstanceName(m.namespace),
+				Namespace:          app.Spec.Destination.Namespace,
+				ApplicationSource:  &source,
+				KubeVersion:        serverVersion,
+				ApiVersions:        argo.APIResourcesToStrings(apiResources, true),
+				TrackingMethod:     string(argo.GetTrackingMethod(m.settingsMgr)),
+				RefSources:         refSources,
+				HasMultipleSources: app.Spec.HasMultipleSources(),
 			})
 			if err != nil {
 				return nil, nil, fmt.Errorf("failed to compare revisions for source %d of %d: %w", i+1, len(sources), err)
