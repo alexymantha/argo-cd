@@ -131,8 +131,8 @@ func Test_ChangedFiles(t *testing.T) {
 	err = client.Init()
 	require.NoError(t, err)
 
-  // Create a tag to have a second ref
-  err = runCmd(tempDir, "git", "tag", "some-tag")
+	// Create a tag to have a second ref
+	err = runCmd(tempDir, "git", "tag", "some-tag")
 	require.NoError(t, err)
 
 	p := path.Join(tempDir, "README")
