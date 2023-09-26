@@ -148,7 +148,7 @@ func Test_ChangedFiles(t *testing.T) {
 	require.Error(t, err)
 
 	// Same commit, no changes
-  changedFiles, err := client.ChangedFiles(commitSHA, commitSHA)
+	changedFiles, err := client.ChangedFiles(commitSHA, commitSHA)
 	require.NoError(t, err)
 	assert.ElementsMatch(t, []string{}, changedFiles)
 
