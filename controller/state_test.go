@@ -493,11 +493,11 @@ var defaultProj = argoappv1.AppProject{
 // TestCompareAppStateWithManifestGeneratePath tests that it compares revisions when the manifest-generate-path annotation is set.
 func TestCompareAppStateWithManifestGeneratePath(t *testing.T) {
 	app := newFakeApp()
-  app.SetAnnotations(map[string]string{argoappv1.AnnotationKeyManifestGeneratePaths: "."})
-  app.Status.Sync = argoappv1.SyncStatus{
-    Revision: "abc123",
-    Status: argoappv1.SyncStatusCodeSynced,
-  }
+	app.SetAnnotations(map[string]string{argoappv1.AnnotationKeyManifestGeneratePaths: "."})
+	app.Status.Sync = argoappv1.SyncStatus{
+		Revision: "abc123",
+		Status:   argoappv1.SyncStatusCodeSynced,
+	}
 
 	data := fakeData{
 		manifestResponse: &apiclient.ManifestResponse{
@@ -506,10 +506,10 @@ func TestCompareAppStateWithManifestGeneratePath(t *testing.T) {
 			Server:    test.FakeClusterURL,
 			Revision:  "abc123",
 		},
-    compareRevisionsResponse: &apiclient.CompareRevisionsResponse{
-      Changed: false,
-      Updated: true,
-    },
+		compareRevisionsResponse: &apiclient.CompareRevisionsResponse{
+			Changed: false,
+			Updated: true,
+		},
 	}
 
 	ctrl := newFakeController(&data)
@@ -520,7 +520,7 @@ func TestCompareAppStateWithManifestGeneratePath(t *testing.T) {
 	assert.NotNil(t, compRes)
 	assert.Equal(t, argoappv1.SyncStatusCodeSynced, compRes.syncStatus.Status)
 	assert.Equal(t, "abc123", compRes.syncStatus.Revision)
-  ctrl.repoClientset.(*mockrepoclient.Clientset).RepoServerServiceClient.(*mockrepoclient.RepoServerServiceClient).AssertNumberOfCalls(t, "CompareRevisions", 1)
+	ctrl.repoClientset.(*mockrepoclient.Clientset).RepoServerServiceClient.(*mockrepoclient.RepoServerServiceClient).AssertNumberOfCalls(t, "CompareRevisions", 1)
 }
 
 func TestSetHealth(t *testing.T) {

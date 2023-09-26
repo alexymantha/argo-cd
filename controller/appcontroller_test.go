@@ -49,15 +49,15 @@ type namespacedResource struct {
 }
 
 type fakeData struct {
-	apps                   []runtime.Object
-	manifestResponse       *apiclient.ManifestResponse
-	manifestResponses      []*apiclient.ManifestResponse
-	managedLiveObjs        map[kube.ResourceKey]*unstructured.Unstructured
-	namespacedResources    map[kube.ResourceKey]namespacedResource
-	configMapData          map[string]string
-	metricsCacheExpiration time.Duration
-	applicationNamespaces  []string
-  compareRevisionsResponse *apiclient.CompareRevisionsResponse      
+	apps                     []runtime.Object
+	manifestResponse         *apiclient.ManifestResponse
+	manifestResponses        []*apiclient.ManifestResponse
+	managedLiveObjs          map[kube.ResourceKey]*unstructured.Unstructured
+	namespacedResources      map[kube.ResourceKey]namespacedResource
+	configMapData            map[string]string
+	metricsCacheExpiration   time.Duration
+	applicationNamespaces    []string
+	compareRevisionsResponse *apiclient.CompareRevisionsResponse
 }
 
 func newFakeController(data *fakeData) *ApplicationController {
@@ -78,7 +78,7 @@ func newFakeController(data *fakeData) *ApplicationController {
 		mockRepoClient.On("GenerateManifest", mock.Anything, mock.Anything).Return(data.manifestResponse, nil)
 	}
 
-  mockRepoClient.On("CompareRevisions", mock.Anything, mock.Anything).Return(data.compareRevisionsResponse, nil)
+	mockRepoClient.On("CompareRevisions", mock.Anything, mock.Anything).Return(data.compareRevisionsResponse, nil)
 
 	mockRepoClientset := mockrepoclient.Clientset{RepoServerServiceClient: &mockRepoClient}
 
