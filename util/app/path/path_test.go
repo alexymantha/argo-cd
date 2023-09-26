@@ -133,6 +133,7 @@ func Test_AppFilesHaveChanged(t *testing.T) {
 		changeExpected bool
 	}{
 		{"default no path", &v1alpha1.Application{}, []string{"README.md"}, true},
+		{"no files changed", getApp(".", "source/path"), []string{}, false},
 		{"relative path - matching", getApp(".", "source/path"), []string{"source/path/my-deployment.yaml"}, true},
 		{"relative path, multi source - matching #1", getMultiSourceApp(".", "source/path", "other/path"), []string{"source/path/my-deployment.yaml"}, true},
 		{"relative path, multi source - matching #2", getMultiSourceApp(".", "other/path", "source/path"), []string{"source/path/my-deployment.yaml"}, true},
@@ -162,6 +163,7 @@ func Test_AppFilesHaveChanged(t *testing.T) {
 		{"file two relative paths, multi source - matching", getMultiSourceApp("./README.md;../shared/my-deployment.yaml", "my-app", "other-path"), []string{"shared/my-deployment.yaml"}, true},
 		{"file two relative paths - not matching", getApp(".README.md;../shared/my-deployment.yaml", "my-app"), []string{"kustomization.yaml"}, false},
 		{"file two relative paths, multi source - not matching", getMultiSourceApp(".README.md;../shared/my-deployment.yaml", "my-app", "other-path"), []string{"kustomization.yaml"}, false},
+		{"changed file absolute path - matching", getApp(".", "source/path"), []string{"/source/path/my-deployment.yaml"}, true},
 	}
 	for _, tt := range tests {
 		ttc := tt
@@ -170,6 +172,33 @@ func Test_AppFilesHaveChanged(t *testing.T) {
 			refreshPaths := GetAppRefreshPaths(ttc.app)
 			if got := AppFilesHaveChanged(refreshPaths, ttc.files); got != ttc.changeExpected {
 				t.Errorf("AppFilesHaveChanged() = %v, want %v", got, ttc.changeExpected)
+			}
+		})
+	}
+}
+
+func Test_GetAppRefreshPaths(t *testing.T) {
+	tests := []struct {
+		name           string
+		app            *v1alpha1.Application
+		expectedPaths  []string
+	}{
+		{"default no path", &v1alpha1.Application{}, []string{}},
+		{"relative path", getApp(".", "source/path"), []string{"source/path"}},
+		{"absolute path", getApp("/source/path", "source/path"), []string{"source/path"}},
+		{"absolute path - multi source", getMultiSourceApp("/source/path", "source/path", "other/path"), []string{"source/path"}},
+		{"two relative paths ", getApp(".;../shared", "my-app"), []string{"my-app", "shared"}},
+		{"file relative path", getApp("./my-deployment.yaml", "source/path"), []string{"source/path/my-deployment.yaml"}},
+    {"file absolute path", getApp("/source/path/my-deployment.yaml", "source/path"), []string{"source/path/my-deployment.yaml"}},
+    {"file two relative paths", getApp("./README.md;../shared/my-deployment.yaml", "my-app"), []string{"my-app/README.md", "shared/my-deployment.yaml"}},
+    {"empty path", getApp(".;", "source/path"), []string{"source/path"}},
+	}
+	for _, tt := range tests {
+		ttc := tt
+		t.Run(ttc.name, func(t *testing.T) {
+			t.Parallel()
+			if got := GetAppRefreshPaths(ttc.app); !assert.ElementsMatch(t, ttc.expectedPaths, got) {
+				t.Errorf("GetAppRefreshPath() = %v, want %v", got, ttc.expectedPaths)
 			}
 		})
 	}
