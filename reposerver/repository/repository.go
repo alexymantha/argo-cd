@@ -2709,7 +2709,7 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
 		err := s.cache.GetManifests(syncedRevision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
 		if err != nil && err != cache.ErrCacheMiss {
 			log.Warnf("manifest cache get error %s: %v", request.ApplicationSource.String(), err)
-			return &apiclient.CompareRevisionsResponse{}, nil
+      return &apiclient.CompareRevisionsResponse{}, nil
 		}
 
 		err = s.cache.SetManifests(revision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
@@ -2719,9 +2719,9 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
 		}
 
 		log.Debugf("manifest cache updated for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
-	} else {
-    log.Debugf("changes found for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
-  }
+    return &apiclient.CompareRevisionsResponse{Updated: true}, nil
+	} 
 
-	return &apiclient.CompareRevisionsResponse{}, nil
+  log.Debugf("changes found for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
+  return &apiclient.CompareRevisionsResponse{Changed: true}, nil
 }

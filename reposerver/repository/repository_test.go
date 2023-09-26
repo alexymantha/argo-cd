@@ -3252,7 +3252,7 @@ func TestCompareRevisions(t *testing.T) {
 				return
 			}
 			assert.Equalf(t, tt.want, got, "CompareRevisions(%v, %v)", tt.args.ctx, tt.args.request)
-		})
+    })
 	}
 }
 
