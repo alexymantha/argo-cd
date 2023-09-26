@@ -115,6 +115,48 @@ func Test_IsAnnotatedTag(t *testing.T) {
 	assert.False(t, atag)
 }
 
+func Test_ChangedFiles(t *testing.T) {
+	tempDir := t.TempDir()
+	client, err := NewClient(fmt.Sprintf("file://%s", tempDir), NopCreds{}, true, false, "")
+	require.NoError(t, err)
+
+	err = client.Init()
+	require.NoError(t, err)
+
+	p := path.Join(client.Root(), "README")
+	f, err := os.Create(p)
+	require.NoError(t, err)
+	_, err = f.WriteString("Hello.")
+	require.NoError(t, err)
+	err = f.Close()
+	require.NoError(t, err)
+
+	err = runCmd(client.Root(), "git", "add", "README")
+	require.NoError(t, err)
+
+	err = runCmd(client.Root(), "git", "commit", "-m", "Initial commit", "-a")
+	require.NoError(t, err)
+
+	previousSHA, err := client.LsRemote("HEAD~1")
+	require.NoError(t, err)
+
+	commitSHA, err := client.LsRemote("HEAD")
+	require.NoError(t, err)
+
+	// Invalid commits, error
+	changedFiles, err := client.ChangedFiles("", "")
+	require.Error(t, err)
+
+	// Same commit, no changes
+	changedFiles, err := client.ChangedFiles(commitSHA, commitSHA)
+	require.NoError(t, err)
+	assert.ElementsMatch(t, []string{}, changedFiles)
+
+	changedFile, err = client.ChangedFiles(previousSHA, commitSHA)
+	require.NoError(t, err)
+	assert.ElementsMatch(t, []string{"README"}, changedFiles)
+}
+
 func Test_nativeGitClient_Submodule(t *testing.T) {
 	tempDir, err := os.MkdirTemp("", "")
 	require.NoError(t, err)

@@ -179,9 +179,9 @@ func Test_AppFilesHaveChanged(t *testing.T) {
 
 func Test_GetAppRefreshPaths(t *testing.T) {
 	tests := []struct {
-		name           string
-		app            *v1alpha1.Application
-		expectedPaths  []string
+		name          string
+		app           *v1alpha1.Application
+		expectedPaths []string
 	}{
 		{"default no path", &v1alpha1.Application{}, []string{}},
 		{"relative path", getApp(".", "source/path"), []string{"source/path"}},
@@ -189,9 +189,9 @@ func Test_GetAppRefreshPaths(t *testing.T) {
 		{"absolute path - multi source", getMultiSourceApp("/source/path", "source/path", "other/path"), []string{"source/path"}},
 		{"two relative paths ", getApp(".;../shared", "my-app"), []string{"my-app", "shared"}},
 		{"file relative path", getApp("./my-deployment.yaml", "source/path"), []string{"source/path/my-deployment.yaml"}},
-    {"file absolute path", getApp("/source/path/my-deployment.yaml", "source/path"), []string{"source/path/my-deployment.yaml"}},
-    {"file two relative paths", getApp("./README.md;../shared/my-deployment.yaml", "my-app"), []string{"my-app/README.md", "shared/my-deployment.yaml"}},
-    {"empty path", getApp(".;", "source/path"), []string{"source/path"}},
+		{"file absolute path", getApp("/source/path/my-deployment.yaml", "source/path"), []string{"source/path/my-deployment.yaml"}},
+		{"file two relative paths", getApp("./README.md;../shared/my-deployment.yaml", "my-app"), []string{"my-app/README.md", "shared/my-deployment.yaml"}},
+		{"empty path", getApp(".;", "source/path"), []string{"source/path"}},
 	}
 	for _, tt := range tests {
 		ttc := tt
