@@ -673,6 +673,10 @@ func (m *nativeGitClient) IsAnnotatedTag(revision string) bool {
 
 // returns the meta-data for the commit
 func (m *nativeGitClient) ChangedFiles(revision string, targetRevision string) ([]string, error) {
+  if revision == targetRevision {
+    return []string{}, nil
+  }
+
 	out, err := m.runCmd("diff", "--name-only", fmt.Sprintf("%s..%s", revision, targetRevision))
 	if err != nil {
 		return nil, err

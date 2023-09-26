@@ -116,14 +116,26 @@ func Test_IsAnnotatedTag(t *testing.T) {
 }
 
 func Test_ChangedFiles(t *testing.T) {
-	tempDir := t.TempDir()
+	tempDir, err := os.MkdirTemp("", "")
+	require.NoError(t, err)
+
+	err = runCmd(tempDir, "git", "init")
+	require.NoError(t, err)
+
+	err = runCmd(tempDir, "git", "commit", "-m", "Initial commit", "--allow-empty")
+	require.NoError(t, err)
+
 	client, err := NewClient(fmt.Sprintf("file://%s", tempDir), NopCreds{}, true, false, "")
 	require.NoError(t, err)
 
 	err = client.Init()
 	require.NoError(t, err)
 
-	p := path.Join(client.Root(), "README")
+  // Create a tag to have a second ref
+  err = runCmd(tempDir, "git", "tag", "some-tag")
+	require.NoError(t, err)
+
+	p := path.Join(tempDir, "README")
 	f, err := os.Create(p)
 	require.NoError(t, err)
 	_, err = f.WriteString("Hello.")
@@ -131,20 +143,20 @@ func Test_ChangedFiles(t *testing.T) {
 	err = f.Close()
 	require.NoError(t, err)
 
-	err = runCmd(client.Root(), "git", "add", "README")
+	err = runCmd(tempDir, "git", "add", "README")
 	require.NoError(t, err)
 
-	err = runCmd(client.Root(), "git", "commit", "-m", "Initial commit", "-a")
+	err = runCmd(tempDir, "git", "commit", "-m", "Changes", "-a")
 	require.NoError(t, err)
 
-	previousSHA, err := client.LsRemote("HEAD~1")
+	previousSHA, err := client.LsRemote("some-tag")
 	require.NoError(t, err)
 
 	commitSHA, err := client.LsRemote("HEAD")
 	require.NoError(t, err)
 
 	// Invalid commits, error
-	_, err = client.ChangedFiles("", "")
+	_, err = client.ChangedFiles("", "invalid")
 	require.Error(t, err)
 
 	// Same commit, no changes
