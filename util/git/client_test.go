@@ -152,7 +152,7 @@ func Test_ChangedFiles(t *testing.T) {
 	require.NoError(t, err)
 	assert.ElementsMatch(t, []string{}, changedFiles)
 
-	changedFile, err = client.ChangedFiles(previousSHA, commitSHA)
+	changedFiles, err = client.ChangedFiles(previousSHA, commitSHA)
 	require.NoError(t, err)
 	assert.ElementsMatch(t, []string{"README"}, changedFiles)
 }
