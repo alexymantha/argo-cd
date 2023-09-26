@@ -144,11 +144,11 @@ func Test_ChangedFiles(t *testing.T) {
 	require.NoError(t, err)
 
 	// Invalid commits, error
-	changedFiles, err := client.ChangedFiles("", "")
+	_, err = client.ChangedFiles("", "")
 	require.Error(t, err)
 
 	// Same commit, no changes
-	changedFiles, err = client.ChangedFiles(commitSHA, commitSHA)
+  changedFiles, err := client.ChangedFiles(commitSHA, commitSHA)
 	require.NoError(t, err)
 	assert.ElementsMatch(t, []string{}, changedFiles)
 
