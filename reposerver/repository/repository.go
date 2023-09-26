@@ -2730,6 +2730,13 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
       return &apiclient.CompareRevisionsResponse{}, nil
 		}
 
+    // Update revision in refSource
+    if request.HasMultipleSources && request.ApplicationSource.Helm != nil {
+      for normalizedURL := range refSourceCommitSHAs {
+        refSourceCommitSHAs[normalizedURL] = revision
+      }
+    }
+
 		err = s.cache.SetManifests(revision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
 		if err != nil {
 			log.Warnf("manifest cache set error %s: %v", request.ApplicationSource.String(), err)
