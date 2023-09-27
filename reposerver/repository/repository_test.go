@@ -342,13 +342,12 @@ func TestHelmChartReferencingExternalValues(t *testing.T) {
 }
 
 func TestHelmChartReferencingExternalValues_InvalidRefs(t *testing.T) {
-	invalidAppSource := argoappv1.ApplicationSource{RepoURL: "https://git.example.com/test/repo"}
 	spec := argoappv1.ApplicationSpec{
 		Sources: []argoappv1.ApplicationSource{
 			{RepoURL: "https://helm.example.com", Chart: "my-chart", TargetRevision: ">= 1.0.0", Helm: &argoappv1.ApplicationSourceHelm{
 				ValueFiles: []string{"$ref/testdata/my-chart/my-chart-values.yaml"},
 			}},
-			invalidAppSource,
+			argoappv1.ApplicationSource{RepoURL: "https://git.example.com/test/repo"},
 		},
 	}
 
@@ -372,7 +371,7 @@ func TestHelmChartReferencingExternalValues_InvalidRefs(t *testing.T) {
 	// Invalid ref
 	service = newService(".")
 
-	invalidAppSource.Ref = "Invalid"
+	spec.Sources[1].Ref = "Invalid"
 	refSources, err = argo.GetRefSources(context.Background(), spec, repoDB)
 	require.NoError(t, err)
 
@@ -385,8 +384,8 @@ func TestHelmChartReferencingExternalValues_InvalidRefs(t *testing.T) {
 	// Helm chart as ref (unsupported)
 	service = newService(".")
 
-	invalidAppSource.Ref = "ref"
-	invalidAppSource.Chart = "helm-chart"
+	spec.Sources[1].Ref = "ref"
+	spec.Sources[1].Chart = "helm-chart"
 	refSources, err = argo.GetRefSources(context.Background(), spec, repoDB)
 	require.NoError(t, err)
 
