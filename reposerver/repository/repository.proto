@@ -254,15 +254,27 @@ message GitDirectoriesResponse {
     repeated string paths = 1;
 }
 
-message ManifestGeneratePathRequest {
+message CompareRevisionsRequest {
     github.com.argoproj.argo_cd.v2.pkg.apis.application.v1alpha1.Repository repo = 1;
-    string revision = 2;
-    string path = 3;
+
+    string appLabelKey = 2;
+    string appName = 3;
+    string namespace = 4;
+    github.com.argoproj.argo_cd.v2.pkg.apis.application.v1alpha1.ApplicationSource applicationSource = 5;
+    string trackingMethod = 6;
+    map<string, github.com.argoproj.argo_cd.v2.pkg.apis.application.v1alpha1.RefTarget> refSources = 7;
+    string kubeVersion = 8;
+    repeated string apiVersions = 9;
+    bool hasMultipleSources = 10;
+
+    string syncedRevision = 11;
+    string revision = 12;
+    repeated string paths = 13;
 }
 
-message ManifestGeneratePathResponse {
-    // A set of paths to check for changes during manifest generation
-    repeated string paths = 1;
+message CompareRevisionsResponse {
+    bool changed = 1;
+    bool updated = 2;
 }
 
 // ManifestService
@@ -320,7 +332,7 @@ service RepoServerService {
     rpc GetGitDirectories(GitDirectoriesRequest) returns (GitDirectoriesResponse) {
     }
 
-    // GetManifestGeneratePath returns the paths to check for changes during manifest generation
-    rpc GetManifestGeneratePath(ManifestGeneratePathRequest) returns (ManifestGeneratePathResponse) {
+    // CompareRevisions will compare two revisions and return whether there were relevant changes based on the paths provided
+    rpc CompareRevisions(CompareRevisionsRequest) returns (CompareRevisionsResponse) {
     }
 }

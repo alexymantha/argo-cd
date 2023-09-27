@@ -341,6 +341,61 @@ func TestHelmChartReferencingExternalValues(t *testing.T) {
 	}, response)
 }
 
+func TestHelmChartReferencingExternalValues_InvalidRefs(t *testing.T) {
+	spec := argoappv1.ApplicationSpec{
+		Sources: []argoappv1.ApplicationSource{
+			{RepoURL: "https://helm.example.com", Chart: "my-chart", TargetRevision: ">= 1.0.0", Helm: &argoappv1.ApplicationSourceHelm{
+				ValueFiles: []string{"$ref/testdata/my-chart/my-chart-values.yaml"},
+			}},
+			argoappv1.ApplicationSource{RepoURL: "https://git.example.com/test/repo"},
+		},
+	}
+
+	repoDB := &dbmocks.ArgoDB{}
+	repoDB.On("GetRepository", context.Background(), "https://git.example.com/test/repo").Return(&argoappv1.Repository{
+		Repo: "https://git.example.com/test/repo",
+	}, nil)
+
+	// Empty refsource
+	service := newService(".")
+
+	refSources, err := argo.GetRefSources(context.Background(), spec, repoDB)
+	require.NoError(t, err)
+
+	request := &apiclient.ManifestRequest{Repo: &argoappv1.Repository{}, ApplicationSource: &spec.Sources[0], NoCache: true, RefSources: refSources, HasMultipleSources: true, ProjectName: "something",
+		ProjectSourceRepos: []string{"*"}}
+	response, err := service.GenerateManifest(context.Background(), request)
+	assert.Error(t, err)
+	assert.Nil(t, response)
+
+	// Invalid ref
+	service = newService(".")
+
+	spec.Sources[1].Ref = "Invalid"
+	refSources, err = argo.GetRefSources(context.Background(), spec, repoDB)
+	require.NoError(t, err)
+
+	request = &apiclient.ManifestRequest{Repo: &argoappv1.Repository{}, ApplicationSource: &spec.Sources[0], NoCache: true, RefSources: refSources, HasMultipleSources: true, ProjectName: "something",
+		ProjectSourceRepos: []string{"*"}}
+	response, err = service.GenerateManifest(context.Background(), request)
+	assert.Error(t, err)
+	assert.Nil(t, response)
+
+	// Helm chart as ref (unsupported)
+	service = newService(".")
+
+	spec.Sources[1].Ref = "ref"
+	spec.Sources[1].Chart = "helm-chart"
+	refSources, err = argo.GetRefSources(context.Background(), spec, repoDB)
+	require.NoError(t, err)
+
+	request = &apiclient.ManifestRequest{Repo: &argoappv1.Repository{}, ApplicationSource: &spec.Sources[0], NoCache: true, RefSources: refSources, HasMultipleSources: true, ProjectName: "something",
+		ProjectSourceRepos: []string{"*"}}
+	response, err = service.GenerateManifest(context.Background(), request)
+	assert.Error(t, err)
+	assert.Nil(t, response)
+}
+
 func TestHelmChartReferencingExternalValues_OutOfBounds_Symlink(t *testing.T) {
 	service := newService(".")
 	err := os.Mkdir("testdata/oob-symlink", 0755)
@@ -3070,6 +3125,223 @@ func TestGetGitFiles(t *testing.T) {
 	fileResponse, err = s.GetGitFiles(context.TODO(), filesRequest)
 	assert.Nil(t, err)
 	assert.Equal(t, expected, fileResponse.GetMap())
+}
+
+func TestErrorCompareRevisions(t *testing.T) {
+	type fields struct {
+		service *Service
+	}
+	type args struct {
+		ctx     context.Context
+		request *apiclient.CompareRevisionsRequest
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *apiclient.CompareRevisionsResponse
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{name: "InvalidRepo", fields: fields{service: newService(".")}, args: args{
+			ctx: context.TODO(),
+			request: &apiclient.CompareRevisionsRequest{
+				Repo:           nil,
+				Revision:       "HEAD",
+				SyncedRevision: "sadfsadf",
+			},
+		}, want: nil, wantErr: assert.Error},
+		{name: "InvalidResolveRevision", fields: fields{service: func() *Service {
+			s, _ := newServiceWithOpt(func(gitClient *gitmocks.Client, helmClient *helmmocks.Client, paths *iomocks.TempPaths) {
+				gitClient.On("Checkout", mock.Anything, mock.Anything).Return(nil)
+				gitClient.On("LsRemote", mock.Anything).Return("", fmt.Errorf("ah error"))
+				paths.On("GetPath", mock.Anything).Return(".", nil)
+				paths.On("GetPathIfExists", mock.Anything).Return(".", nil)
+			}, ".")
+			return s
+		}()}, args: args{
+			ctx: context.TODO(),
+			request: &apiclient.CompareRevisionsRequest{
+				Repo:           &argoappv1.Repository{Repo: "not-a-valid-url"},
+				Revision:       "sadfsadf",
+				SyncedRevision: "HEAD",
+				Paths:          []string{"."},
+			},
+		}, want: nil, wantErr: assert.Error},
+		{name: "InvalidResolveSyncedRevision", fields: fields{service: func() *Service {
+			s, _ := newServiceWithOpt(func(gitClient *gitmocks.Client, helmClient *helmmocks.Client, paths *iomocks.TempPaths) {
+				gitClient.On("Checkout", mock.Anything, mock.Anything).Return(nil)
+				gitClient.On("LsRemote", "HEAD").Once().Return("632039659e542ed7de0c170a4fcc1c571b288fc0", nil)
+				gitClient.On("LsRemote", mock.Anything).Return("", fmt.Errorf("ah error"))
+				paths.On("GetPath", mock.Anything).Return(".", nil)
+				paths.On("GetPathIfExists", mock.Anything).Return(".", nil)
+			}, ".")
+			return s
+		}()}, args: args{
+			ctx: context.TODO(),
+			request: &apiclient.CompareRevisionsRequest{
+				Repo:           &argoappv1.Repository{Repo: "not-a-valid-url"},
+				Revision:       "HEAD",
+				SyncedRevision: "sadfsadf",
+				Paths:          []string{"."},
+			},
+		}, want: nil, wantErr: assert.Error},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := tt.fields.service
+			got, err := s.CompareRevisions(tt.args.ctx, tt.args.request)
+			if !tt.wantErr(t, err, fmt.Sprintf("CompareRevisions(%v, %v)", tt.args.ctx, tt.args.request)) {
+				return
+			}
+			assert.Equalf(t, tt.want, got, "CompareRevisions(%v, %v)", tt.args.ctx, tt.args.request)
+		})
+	}
+}
+
+func TestCompareRevisions(t *testing.T) {
+	type fields struct {
+		service *Service
+	}
+	type args struct {
+		ctx     context.Context
+		request *apiclient.CompareRevisionsRequest
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *apiclient.CompareRevisionsResponse
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{name: "NoPathAbort", fields: fields{service: func() *Service {
+			s, _ := newServiceWithOpt(func(gitClient *gitmocks.Client, helmClient *helmmocks.Client, paths *iomocks.TempPaths) {
+				gitClient.On("Checkout", mock.Anything, mock.Anything).Return(nil)
+			}, ".")
+			return s
+		}()}, args: args{
+			ctx: context.TODO(),
+			request: &apiclient.CompareRevisionsRequest{
+				Repo:  &argoappv1.Repository{Repo: "a-url.com"},
+				Paths: []string{},
+			},
+		}, want: &apiclient.CompareRevisionsResponse{}, wantErr: assert.NoError},
+		{name: "SameResolvedRevisionAbort", fields: fields{service: func() *Service {
+			s, _ := newServiceWithOpt(func(gitClient *gitmocks.Client, helmClient *helmmocks.Client, paths *iomocks.TempPaths) {
+				gitClient.On("Checkout", mock.Anything, mock.Anything).Return(nil)
+				gitClient.On("LsRemote", "HEAD").Once().Return("632039659e542ed7de0c170a4fcc1c571b288fc0", nil)
+				gitClient.On("LsRemote", "SYNCEDHEAD").Once().Return("632039659e542ed7de0c170a4fcc1c571b288fc0", nil)
+				paths.On("GetPath", mock.Anything).Return(".", nil)
+				paths.On("GetPathIfExists", mock.Anything).Return(".", nil)
+			}, ".")
+			return s
+		}()}, args: args{
+			ctx: context.TODO(),
+			request: &apiclient.CompareRevisionsRequest{
+				Repo:           &argoappv1.Repository{Repo: "a-url.com"},
+				Revision:       "HEAD",
+				SyncedRevision: "SYNCEDHEAD",
+				Paths:          []string{"."},
+			},
+		}, want: &apiclient.CompareRevisionsResponse{}, wantErr: assert.NoError},
+		{name: "ChangedFilesDoNothing", fields: fields{service: func() *Service {
+			s, _ := newServiceWithOpt(func(gitClient *gitmocks.Client, helmClient *helmmocks.Client, paths *iomocks.TempPaths) {
+				gitClient.On("Init").Return(nil)
+				gitClient.On("Fetch", mock.Anything).Return(nil)
+				gitClient.On("Checkout", mock.Anything, mock.Anything).Return(nil)
+				gitClient.On("LsRemote", "HEAD").Once().Return("632039659e542ed7de0c170a4fcc1c571b288fc0", nil)
+				gitClient.On("LsRemote", "SYNCEDHEAD").Once().Return("1e67a504d03def3a6a1125d934cb511680f72555", nil)
+				paths.On("GetPath", mock.Anything).Return(".", nil)
+				paths.On("GetPathIfExists", mock.Anything).Return(".", nil)
+				gitClient.On("Root").Return("")
+				gitClient.On("ChangedFiles", mock.Anything, mock.Anything).Return([]string{"app.yaml"}, nil)
+			}, ".")
+			return s
+		}()}, args: args{
+			ctx: context.TODO(),
+			request: &apiclient.CompareRevisionsRequest{
+				Repo:           &argoappv1.Repository{Repo: "a-url.com"},
+				Revision:       "HEAD",
+				SyncedRevision: "SYNCEDHEAD",
+				Paths:          []string{"."},
+			},
+		}, want: &apiclient.CompareRevisionsResponse{
+			Changed: true,
+		}, wantErr: assert.NoError},
+		{name: "NoChangesUpdateCache", fields: fields{service: func() *Service {
+			s, _ := newServiceWithOpt(func(gitClient *gitmocks.Client, helmClient *helmmocks.Client, paths *iomocks.TempPaths) {
+				gitClient.On("Init").Return(nil)
+				gitClient.On("Fetch", mock.Anything).Return(nil)
+				gitClient.On("Checkout", mock.Anything, mock.Anything).Return(nil)
+				gitClient.On("LsRemote", "HEAD").Once().Return("632039659e542ed7de0c170a4fcc1c571b288fc0", nil)
+				gitClient.On("LsRemote", "SYNCEDHEAD").Once().Return("1e67a504d03def3a6a1125d934cb511680f72555", nil)
+				paths.On("GetPath", mock.Anything).Return(".", nil)
+				paths.On("GetPathIfExists", mock.Anything).Return(".", nil)
+				gitClient.On("Root").Return("")
+				gitClient.On("ChangedFiles", mock.Anything, mock.Anything).Return([]string{}, nil)
+			}, ".")
+			return s
+		}()}, args: args{
+			ctx: context.TODO(),
+			request: &apiclient.CompareRevisionsRequest{
+				Repo:           &argoappv1.Repository{Repo: "a-url.com"},
+				Revision:       "HEAD",
+				SyncedRevision: "SYNCEDHEAD",
+				Paths:          []string{"."},
+
+				AppLabelKey:       "app.kubernetes.io/name",
+				AppName:           "no-change-update-cache",
+				Namespace:         "default",
+				TrackingMethod:    "annotation+label",
+				ApplicationSource: &argoappv1.ApplicationSource{Path: "."},
+				KubeVersion:       "v1.16.0",
+			},
+		}, want: &apiclient.CompareRevisionsResponse{
+			Updated: true,
+		}, wantErr: assert.NoError},
+		{name: "NoChangesHelmMultiSourceUpdateCache", fields: fields{service: func() *Service {
+			s, _ := newServiceWithOpt(func(gitClient *gitmocks.Client, helmClient *helmmocks.Client, paths *iomocks.TempPaths) {
+				gitClient.On("Init").Return(nil)
+				gitClient.On("Fetch", mock.Anything).Return(nil)
+				gitClient.On("Checkout", mock.Anything, mock.Anything).Return(nil)
+				gitClient.On("LsRemote", "HEAD").Once().Return("632039659e542ed7de0c170a4fcc1c571b288fc0", nil)
+				gitClient.On("LsRemote", "SYNCEDHEAD").Once().Return("1e67a504d03def3a6a1125d934cb511680f72555", nil)
+				paths.On("GetPath", mock.Anything).Return(".", nil)
+				paths.On("GetPathIfExists", mock.Anything).Return(".", nil)
+				gitClient.On("Root").Return("")
+				gitClient.On("ChangedFiles", mock.Anything, mock.Anything).Return([]string{}, nil)
+			}, ".")
+			return s
+		}()}, args: args{
+			ctx: context.TODO(),
+			request: &apiclient.CompareRevisionsRequest{
+				Repo:           &argoappv1.Repository{Repo: "a-url.com"},
+				Revision:       "HEAD",
+				SyncedRevision: "SYNCEDHEAD",
+				Paths:          []string{"."},
+
+				AppLabelKey:       "app.kubernetes.io/name",
+				AppName:           "no-change-update-cache",
+				Namespace:         "default",
+				TrackingMethod:    "annotation+label",
+				ApplicationSource: &argoappv1.ApplicationSource{Path: ".", Helm: &argoappv1.ApplicationSourceHelm{ReleaseName: "test"}},
+				KubeVersion:       "v1.16.0",
+
+				HasMultipleSources: true,
+			},
+		}, want: &apiclient.CompareRevisionsResponse{
+			Updated: true,
+		}, wantErr: assert.NoError},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := tt.fields.service
+			got, err := s.CompareRevisions(tt.args.ctx, tt.args.request)
+			if !tt.wantErr(t, err, fmt.Sprintf("CompareRevisions(%v, %v)", tt.args.ctx, tt.args.request)) {
+				return
+			}
+			assert.Equalf(t, tt.want, got, "CompareRevisions(%v, %v)", tt.args.ctx, tt.args.request)
+		})
+	}
 }
 
 func Test_getRepoSanitizerRegex(t *testing.T) {
