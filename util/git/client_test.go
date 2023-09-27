@@ -116,16 +116,19 @@ func Test_IsAnnotatedTag(t *testing.T) {
 }
 
 func Test_ChangedFiles(t *testing.T) {
-  tempDir := t.TempDir()
+	tempDir := t.TempDir()
 
-	client, err := NewClient(fmt.Sprintf("file://%s", tempDir), NopCreds{}, true, false, "")
+	client, err := NewClientExt(fmt.Sprintf("file://%s", tempDir), tempDir, NopCreds{}, true, false, "")
 	require.NoError(t, err)
 
 	err = client.Init()
 	require.NoError(t, err)
 
-  // Create a tag to have a second ref
-  err = runCmd(client.Root(), "git", "tag", "some-tag")
+	err = runCmd(client.Root(), "git", "commit", "-m", "Initial commit", "--allow-empty")
+	require.NoError(t, err)
+
+	// Create a tag to have a second ref
+	err = runCmd(client.Root(), "git", "tag", "some-tag")
 	require.NoError(t, err)
 
 	p := path.Join(client.Root(), "README")
@@ -142,7 +145,7 @@ func Test_ChangedFiles(t *testing.T) {
 	err = runCmd(client.Root(), "git", "commit", "-m", "Changes", "-a")
 	require.NoError(t, err)
 
-  runCmd(client.Root(), "git", "show-ref")
+	runCmd(client.Root(), "git", "show-ref")
 
 	previousSHA, err := client.LsRemote("some-tag")
 	require.NoError(t, err)
@@ -158,8 +161,6 @@ func Test_ChangedFiles(t *testing.T) {
 	changedFiles, err := client.ChangedFiles(commitSHA, commitSHA)
 	require.NoError(t, err)
 	assert.ElementsMatch(t, []string{}, changedFiles)
-
-
 
 	changedFiles, err = client.ChangedFiles(previousSHA, commitSHA)
 	require.NoError(t, err)
