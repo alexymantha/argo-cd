@@ -145,8 +145,6 @@ func Test_ChangedFiles(t *testing.T) {
 	err = runCmd(client.Root(), "git", "commit", "-m", "Changes", "-a")
 	require.NoError(t, err)
 
-	runCmd(client.Root(), "git", "show-ref")
-
 	previousSHA, err := client.LsRemote("some-tag")
 	require.NoError(t, err)
 
