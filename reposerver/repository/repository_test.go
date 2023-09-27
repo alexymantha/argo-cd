@@ -347,7 +347,7 @@ func TestHelmChartReferencingExternalValues_InvalidRefs(t *testing.T) {
 			{RepoURL: "https://helm.example.com", Chart: "my-chart", TargetRevision: ">= 1.0.0", Helm: &argoappv1.ApplicationSourceHelm{
 				ValueFiles: []string{"$ref/testdata/my-chart/my-chart-values.yaml"},
 			}},
-			argoappv1.ApplicationSource{RepoURL: "https://git.example.com/test/repo"},
+			{RepoURL: "https://git.example.com/test/repo"},
 		},
 	}
 
