@@ -160,6 +160,12 @@ func Test_ChangedFiles(t *testing.T) {
 	require.NoError(t, err)
 	assert.ElementsMatch(t, []string{}, changedFiles)
 
+	// Different ref, no changes
+	changedFiles, err = client.ChangedFiles(commitSHA, "HEAD")
+	require.NoError(t, err)
+	assert.ElementsMatch(t, []string{}, changedFiles)
+
+	// Different ref, with changes
 	changedFiles, err = client.ChangedFiles(previousSHA, commitSHA)
 	require.NoError(t, err)
 	assert.ElementsMatch(t, []string{"README"}, changedFiles)

@@ -341,6 +341,62 @@ func TestHelmChartReferencingExternalValues(t *testing.T) {
 	}, response)
 }
 
+func TestHelmChartReferencingExternalValues_InvalidRefs(t *testing.T) {
+	invalidAppSource := argoappv1.ApplicationSource{RepoURL: "https://git.example.com/test/repo"}
+	spec := argoappv1.ApplicationSpec{
+		Sources: []argoappv1.ApplicationSource{
+			{RepoURL: "https://helm.example.com", Chart: "my-chart", TargetRevision: ">= 1.0.0", Helm: &argoappv1.ApplicationSourceHelm{
+				ValueFiles: []string{"$ref/testdata/my-chart/my-chart-values.yaml"},
+			}},
+			invalidAppSource,
+		},
+	}
+
+	repoDB := &dbmocks.ArgoDB{}
+	repoDB.On("GetRepository", context.Background(), "https://git.example.com/test/repo").Return(&argoappv1.Repository{
+		Repo: "https://git.example.com/test/repo",
+	}, nil)
+
+	// Empty refsource
+	service := newService(".")
+
+	refSources, err := argo.GetRefSources(context.Background(), spec, repoDB)
+	require.NoError(t, err)
+
+	request := &apiclient.ManifestRequest{Repo: &argoappv1.Repository{}, ApplicationSource: &spec.Sources[0], NoCache: true, RefSources: refSources, HasMultipleSources: true, ProjectName: "something",
+		ProjectSourceRepos: []string{"*"}}
+	response, err := service.GenerateManifest(context.Background(), request)
+	assert.Error(t, err)
+	assert.Nil(t, response)
+
+	// Invalid ref
+	service = newService(".")
+
+	invalidAppSource.Ref = "Invalid"
+	refSources, err = argo.GetRefSources(context.Background(), spec, repoDB)
+	require.NoError(t, err)
+
+	request = &apiclient.ManifestRequest{Repo: &argoappv1.Repository{}, ApplicationSource: &spec.Sources[0], NoCache: true, RefSources: refSources, HasMultipleSources: true, ProjectName: "something",
+		ProjectSourceRepos: []string{"*"}}
+	response, err = service.GenerateManifest(context.Background(), request)
+	assert.Error(t, err)
+	assert.Nil(t, response)
+
+	// Helm chart as ref (unsupported)
+	service = newService(".")
+
+	invalidAppSource.Ref = "ref"
+	invalidAppSource.Chart = "helm-chart"
+	refSources, err = argo.GetRefSources(context.Background(), spec, repoDB)
+	require.NoError(t, err)
+
+	request = &apiclient.ManifestRequest{Repo: &argoappv1.Repository{}, ApplicationSource: &spec.Sources[0], NoCache: true, RefSources: refSources, HasMultipleSources: true, ProjectName: "something",
+		ProjectSourceRepos: []string{"*"}}
+	response, err = service.GenerateManifest(context.Background(), request)
+	assert.Error(t, err)
+	assert.Nil(t, response)
+}
+
 func TestHelmChartReferencingExternalValues_OutOfBounds_Symlink(t *testing.T) {
 	service := newService(".")
 	err := os.Mkdir("testdata/oob-symlink", 0755)
@@ -3239,6 +3295,39 @@ func TestCompareRevisions(t *testing.T) {
 				TrackingMethod:    "annotation+label",
 				ApplicationSource: &argoappv1.ApplicationSource{Path: "."},
 				KubeVersion:       "v1.16.0",
+			},
+		}, want: &apiclient.CompareRevisionsResponse{
+			Updated: true,
+		}, wantErr: assert.NoError},
+		{name: "NoChangesHelmMultiSourceUpdateCache", fields: fields{service: func() *Service {
+			s, _ := newServiceWithOpt(func(gitClient *gitmocks.Client, helmClient *helmmocks.Client, paths *iomocks.TempPaths) {
+				gitClient.On("Init").Return(nil)
+				gitClient.On("Fetch", mock.Anything).Return(nil)
+				gitClient.On("Checkout", mock.Anything, mock.Anything).Return(nil)
+				gitClient.On("LsRemote", "HEAD").Once().Return("632039659e542ed7de0c170a4fcc1c571b288fc0", nil)
+				gitClient.On("LsRemote", "SYNCEDHEAD").Once().Return("1e67a504d03def3a6a1125d934cb511680f72555", nil)
+				paths.On("GetPath", mock.Anything).Return(".", nil)
+				paths.On("GetPathIfExists", mock.Anything).Return(".", nil)
+				gitClient.On("Root").Return("")
+				gitClient.On("ChangedFiles", mock.Anything, mock.Anything).Return([]string{}, nil)
+			}, ".")
+			return s
+		}()}, args: args{
+			ctx: context.TODO(),
+			request: &apiclient.CompareRevisionsRequest{
+				Repo:           &argoappv1.Repository{Repo: "a-url.com"},
+				Revision:       "HEAD",
+				SyncedRevision: "SYNCEDHEAD",
+				Paths:          []string{"."},
+
+				AppLabelKey:       "app.kubernetes.io/name",
+				AppName:           "no-change-update-cache",
+				Namespace:         "default",
+				TrackingMethod:    "annotation+label",
+				ApplicationSource: &argoappv1.ApplicationSource{Path: ".", Helm: &argoappv1.ApplicationSourceHelm{ReleaseName: "test"}},
+				KubeVersion:       "v1.16.0",
+
+				HasMultipleSources: true,
 			},
 		}, want: &apiclient.CompareRevisionsResponse{
 			Updated: true,
