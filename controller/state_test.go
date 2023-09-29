@@ -506,10 +506,7 @@ func TestCompareAppStateWithManifestGeneratePath(t *testing.T) {
 			Server:    test.FakeClusterURL,
 			Revision:  "abc123",
 		},
-		compareRevisionsResponse: &apiclient.UpdateRevisionForPathsResponse{
-			Changed: false,
-			Updated: true,
-		},
+		compareRevisionsResponse: &apiclient.UpdateRevisionForPathsResponse{},
 	}
 
 	ctrl := newFakeController(&data)
@@ -520,7 +517,7 @@ func TestCompareAppStateWithManifestGeneratePath(t *testing.T) {
 	assert.NotNil(t, compRes)
 	assert.Equal(t, argoappv1.SyncStatusCodeSynced, compRes.syncStatus.Status)
 	assert.Equal(t, "abc123", compRes.syncStatus.Revision)
-	ctrl.repoClientset.(*mockrepoclient.Clientset).RepoServerServiceClient.(*mockrepoclient.RepoServerServiceClient).AssertNumberOfCalls(t, "CompareRevisions", 1)
+	ctrl.repoClientset.(*mockrepoclient.Clientset).RepoServerServiceClient.(*mockrepoclient.RepoServerServiceClient).AssertNumberOfCalls(t, "UpdateRevisionForPathsResponse", 1)
 }
 
 func TestSetHealth(t *testing.T) {
