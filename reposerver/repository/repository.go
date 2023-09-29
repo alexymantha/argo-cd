@@ -2725,7 +2725,7 @@ func (s *Service) UpdateRevisionForPaths(_ context.Context, request *apiclient.U
 		if err != nil {
 			if err == cache.ErrCacheMiss {
 				log.Debugf("manifest cache miss during comparison for application %s in repo %s from revision %s", request.AppName, repo.Repo, syncedRevision)
-        return &apiclient.UpdateRevisionForPathsResponse{}, nil
+				return &apiclient.UpdateRevisionForPathsResponse{}, nil
 			}
 			log.Warnf("manifest cache get error %s: %v", request.ApplicationSource.String(), err)
 			return &apiclient.UpdateRevisionForPathsResponse{}, nil

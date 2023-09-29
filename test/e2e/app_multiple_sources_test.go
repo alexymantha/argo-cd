@@ -74,7 +74,7 @@ func TestMultiSourceAppWithHelmExternalValueFiles(t *testing.T) {
 			},
 		},
 	}}
-  fmt.Printf("sources: %v\n", sources)
+	fmt.Printf("sources: %v\n", sources)
 	ctx := Given(t)
 	ctx.
 		Sources(sources).
