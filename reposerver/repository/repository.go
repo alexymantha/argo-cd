@@ -2652,11 +2652,11 @@ func (s *Service) GetGitDirectories(_ context.Context, request *apiclient.GitDir
 	}, nil
 }
 
-// CompareRevisions compares two git revisions and checks if the files in the given paths have changed
+// UpdateRevisionForPaths compares two git revisions and checks if the files in the given paths have changed
 // If no files were changed, it will store the already cached manifest to the key corresponding to the old revision, avoiding an unnecessary generation.
 // Example: cache has key "a1a1a1" with manifest "x", and the files for that manifest have not changed,
 // "x" will be stored again with the new revision "b2b2b2".
-func (s *Service) CompareRevisions(_ context.Context, request *apiclient.UpdateRevisionForPathsRequest) (*apiclient.UpdateRevisionForPathsResponse, error) {
+func (s *Service) UpdateRevisionForPaths(_ context.Context, request *apiclient.UpdateRevisionForPathsRequest) (*apiclient.UpdateRevisionForPathsResponse, error) {
 	repo := request.GetRepo()
 	revision := request.GetRevision()
 	syncedRevision := request.GetSyncedRevision()
@@ -2749,5 +2749,5 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.UpdateR
 	}
 
 	log.Debugf("changes found for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
-	return &apiclient.UpdateRevisionForPathsResponse{Changed: true}, nil
+	return &apiclient.UpdateRevisionForPathsResponse{Changes: true}, nil
 }
