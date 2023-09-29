@@ -2705,49 +2705,55 @@ func (s *Service) UpdateRevisionForPaths(_ context.Context, request *apiclient.U
 	changed := apppathutil.AppFilesHaveChanged(refreshPaths, files)
 
 	if !changed {
-		refSourceCommitSHAs := make(map[string]string)
-		if request.HasMultipleSources && request.ApplicationSource.Helm != nil {
-			repoRefs, err := s.getRepoRefs(request.ApplicationSource, request.RefSources, request.Revision, revision)
-			if err != nil {
-				log.Warnf("failed to get repo refs for application %s in repo %s from revision %s: %v", request.AppName, repo.Repo, request.Revision, err)
-				return &apiclient.UpdateRevisionForPathsResponse{}, nil
-			}
-
-			if len(repoRefs) > 0 {
-				for normalizedURL, repoRef := range repoRefs {
-					refSourceCommitSHAs[normalizedURL] = repoRef.commitSHA
-				}
-			}
-		}
-
-		manifest := &cache.CachedManifestResponse{}
-		err := s.cache.GetManifests(syncedRevision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
-		if err != nil {
-			if err == cache.ErrCacheMiss {
-				log.Debugf("manifest cache miss during comparison for application %s in repo %s from revision %s", request.AppName, repo.Repo, syncedRevision)
-				return &apiclient.UpdateRevisionForPathsResponse{}, nil
-			}
-			log.Warnf("manifest cache get error %s: %v", request.ApplicationSource.String(), err)
-			return &apiclient.UpdateRevisionForPathsResponse{}, nil
-		}
-
-		// Update revision in refSource
-		if request.HasMultipleSources && request.ApplicationSource.Helm != nil {
-			for normalizedURL := range refSourceCommitSHAs {
-				refSourceCommitSHAs[normalizedURL] = revision
-			}
-		}
-
-		err = s.cache.SetManifests(revision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
-		if err != nil {
-			log.Warnf("manifest cache set error %s: %v", request.ApplicationSource.String(), err)
-			return &apiclient.UpdateRevisionForPathsResponse{}, nil
-		}
-
-		log.Debugf("manifest cache updated for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
-		return &apiclient.UpdateRevisionForPathsResponse{}, nil
+    err := s.updateCachedRevision(syncedRevision, revision, request)
+    if err != nil {
+      // Only warn with the error, no need to block anything if there is a caching error.
+      log.Warnf("error updating cached revision for repo %s with revision %s: %v", repo.Repo, revision, err)
+      return &apiclient.UpdateRevisionForPathsResponse{}, nil 
+    }
 	}
 
 	log.Debugf("changes found for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
 	return &apiclient.UpdateRevisionForPathsResponse{Changes: true}, nil
+}
+
+func (s *Service) updateCachedRevision(oldRev, newRev string, request *apiclient.UpdateRevisionForPathsRequest) error {
+  refSourceCommitSHAs := make(map[string]string)
+  if request.HasMultipleSources && request.ApplicationSource.Helm != nil {
+    repoRefs, err := s.getRepoRefs(request.ApplicationSource, request.RefSources, request.Revision, oldRev)
+    if err != nil {
+      return fmt.Errorf("failed to get repo refs for application %s in repo %s from revision %s: %w", request.AppName, request.GetRepo(), request.Revision, err) 
+    }
+
+    if len(repoRefs) > 0 {
+      for normalizedURL, repoRef := range repoRefs {
+        refSourceCommitSHAs[normalizedURL] = repoRef.commitSHA
+      }
+    }
+  }
+
+  manifest := &cache.CachedManifestResponse{}
+  err := s.cache.GetManifests(oldRev, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
+  if err != nil {
+    if err == cache.ErrCacheMiss {
+      log.Debugf("manifest cache miss during comparison for application %s in repo %s from revision %s", request.AppName, request.GetRepo(), oldRev)
+      return nil
+    }
+    return fmt.Errorf("manifest cache set error for %s: %w", request.AppName, err)
+  }
+
+  // Update revision in refSource
+  if request.HasMultipleSources && request.ApplicationSource.Helm != nil {
+    for normalizedURL := range refSourceCommitSHAs {
+      refSourceCommitSHAs[normalizedURL] = newRev 
+    }
+  }
+
+  err = s.cache.SetManifests(newRev, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
+  if err != nil {
+    return fmt.Errorf("manifest cache set error for %s: %w", request.AppName, err)
+  }
+
+  log.Debugf("manifest cache updated for application %s in repo %s from revision %s to revision %s", request.AppName, request.GetRepo(), oldRev, newRev)
+  return nil 
 }

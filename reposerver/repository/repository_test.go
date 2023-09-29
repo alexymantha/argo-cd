@@ -3271,7 +3271,7 @@ func TestUpdateRevisionForPaths(t *testing.T) {
 				Paths:          []string{"."},
 			},
 		}, want: &apiclient.UpdateRevisionForPathsResponse{
-			Changed: true,
+			Changes: true,
 		}, wantErr: assert.NoError},
 		{name: "NoChangesUpdateCache", fields: fields{service: func() *Service {
 			s, _ := newServiceWithOpt(func(gitClient *gitmocks.Client, helmClient *helmmocks.Client, paths *iomocks.TempPaths) {
