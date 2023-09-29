@@ -57,7 +57,7 @@ type fakeData struct {
 	configMapData            map[string]string
 	metricsCacheExpiration   time.Duration
 	applicationNamespaces    []string
-	compareRevisionsResponse *apiclient.CompareRevisionsResponse
+	compareRevisionsResponse *apiclient.UpdateRevisionForPathsResponse
 }
 
 func newFakeController(data *fakeData) *ApplicationController {

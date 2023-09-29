@@ -506,7 +506,7 @@ func TestCompareAppStateWithManifestGeneratePath(t *testing.T) {
 			Server:    test.FakeClusterURL,
 			Revision:  "abc123",
 		},
-		compareRevisionsResponse: &apiclient.CompareRevisionsResponse{
+		compareRevisionsResponse: &apiclient.UpdateRevisionForPathsResponse{
 			Changed: false,
 			Updated: true,
 		},

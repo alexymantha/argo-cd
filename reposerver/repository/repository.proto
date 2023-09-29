@@ -254,7 +254,7 @@ message GitDirectoriesResponse {
     repeated string paths = 1;
 }
 
-message CompareRevisionsRequest {
+message UpdateRevisionForPathsRequest {
     github.com.argoproj.argo_cd.v2.pkg.apis.application.v1alpha1.Repository repo = 1;
 
     string appLabelKey = 2;
@@ -272,9 +272,8 @@ message CompareRevisionsRequest {
     repeated string paths = 13;
 }
 
-message CompareRevisionsResponse {
-    bool changed = 1;
-    bool updated = 2;
+message UpdateRevisionForPathsResponse {
+    bool changes = 1;
 }
 
 // ManifestService
@@ -332,7 +331,7 @@ service RepoServerService {
     rpc GetGitDirectories(GitDirectoriesRequest) returns (GitDirectoriesResponse) {
     }
 
-    // CompareRevisions will compare two revisions and return whether there were relevant changes based on the paths provided
-    rpc CompareRevisions(CompareRevisionsRequest) returns (CompareRevisionsResponse) {
+    // UpdateRevisionForPaths will compare two revisions and update the cache with the new revision if no changes are detected in the provided paths
+    rpc UpdateRevisionForPaths(UpdateRevisionForPathsRequest) returns (UpdateRevisionForPathsResponse) {
     }
 }

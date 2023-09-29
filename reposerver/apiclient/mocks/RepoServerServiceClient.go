@@ -22,7 +22,7 @@ type RepoServerServiceClient struct {
 }
 
 // CompareRevisions provides a mock function with given fields: ctx, in, opts
-func (_m *RepoServerServiceClient) CompareRevisions(ctx context.Context, in *apiclient.CompareRevisionsRequest, opts ...grpc.CallOption) (*apiclient.CompareRevisionsResponse, error) {
+func (_m *RepoServerServiceClient) CompareRevisions(ctx context.Context, in *apiclient.UpdateRevisionForPathsRequest, opts ...grpc.CallOption) (*apiclient.UpdateRevisionForPathsResponse, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -32,20 +32,20 @@ func (_m *RepoServerServiceClient) CompareRevisions(ctx context.Context, in *api
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
-	var r0 *apiclient.CompareRevisionsResponse
+	var r0 *apiclient.UpdateRevisionForPathsResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *apiclient.CompareRevisionsRequest, ...grpc.CallOption) (*apiclient.CompareRevisionsResponse, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *apiclient.UpdateRevisionForPathsRequest, ...grpc.CallOption) (*apiclient.UpdateRevisionForPathsResponse, error)); ok {
 		return rf(ctx, in, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *apiclient.CompareRevisionsRequest, ...grpc.CallOption) *apiclient.CompareRevisionsResponse); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *apiclient.UpdateRevisionForPathsRequest, ...grpc.CallOption) *apiclient.UpdateRevisionForPathsResponse); ok {
 		r0 = rf(ctx, in, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*apiclient.CompareRevisionsResponse)
+			r0 = ret.Get(0).(*apiclient.UpdateRevisionForPathsResponse)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *apiclient.CompareRevisionsRequest, ...grpc.CallOption) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *apiclient.UpdateRevisionForPathsRequest, ...grpc.CallOption) error); ok {
 		r1 = rf(ctx, in, opts...)
 	} else {
 		r1 = ret.Error(1)

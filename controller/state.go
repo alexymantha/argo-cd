@@ -184,7 +184,7 @@ func (m *appStateManager) getRepoObjs(app *v1alpha1.Application, sources []v1alp
 		val, ok := app.Annotations[v1alpha1.AnnotationKeyManifestGeneratePaths]
 		if app.Status.Sync.Revision != "" && ok && val != "" {
 			// Validate the manifest-generate-path annotation to avoid generating manifests if it has not changed.
-			_, err = repoClient.CompareRevisions(context.Background(), &apiclient.CompareRevisionsRequest{
+			_, err = repoClient.UpdateRevisionForPaths(context.Background(), &apiclient.UpdateRevisionForPathsRequest{
 				Repo:               repo,
 				Revision:           revisions[i],
 				SyncedRevision:     app.Status.Sync.Revision,

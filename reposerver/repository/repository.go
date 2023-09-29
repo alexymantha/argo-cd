@@ -2656,7 +2656,7 @@ func (s *Service) GetGitDirectories(_ context.Context, request *apiclient.GitDir
 // If no files were changed, it will store the already cached manifest to the key corresponding to the old revision, avoiding an unnecessary generation.
 // Example: cache has key "a1a1a1" with manifest "x", and the files for that manifest have not changed,
 // "x" will be stored again with the new revision "b2b2b2".
-func (s *Service) CompareRevisions(_ context.Context, request *apiclient.CompareRevisionsRequest) (*apiclient.CompareRevisionsResponse, error) {
+func (s *Service) CompareRevisions(_ context.Context, request *apiclient.UpdateRevisionForPathsRequest) (*apiclient.UpdateRevisionForPathsResponse, error) {
 	repo := request.GetRepo()
 	revision := request.GetRevision()
 	syncedRevision := request.GetSyncedRevision()
@@ -2668,7 +2668,7 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
 
 	if len(refreshPaths) == 0 {
 		// Always refresh if path is not specified
-		return &apiclient.CompareRevisionsResponse{}, nil
+		return &apiclient.UpdateRevisionForPathsResponse{}, nil
 	}
 
 	gitClient, revision, err := s.newClientResolveRevision(repo, revision, git.WithCache(s.cache, true))
@@ -2683,7 +2683,7 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
 
 	// No need to compare if it is the same revision
 	if revision == syncedRevision {
-		return &apiclient.CompareRevisionsResponse{}, nil
+		return &apiclient.UpdateRevisionForPathsResponse{}, nil
 	}
 
 	s.metricsServer.IncPendingRepoRequest(repo.Repo)
@@ -2710,7 +2710,7 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
 			repoRefs, err := s.getRepoRefs(request.ApplicationSource, request.RefSources, request.Revision, revision)
 			if err != nil {
 				log.Warnf("failed to get repo refs for application %s in repo %s from revision %s: %v", request.AppName, repo.Repo, request.Revision, err)
-				return &apiclient.CompareRevisionsResponse{}, nil
+				return &apiclient.UpdateRevisionForPathsResponse{}, nil
 			}
 
 			if len(repoRefs) > 0 {
@@ -2722,9 +2722,13 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
 
 		manifest := &cache.CachedManifestResponse{}
 		err := s.cache.GetManifests(syncedRevision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
-		if err != nil && err != cache.ErrCacheMiss {
+		if err != nil {
+			if err == cache.ErrCacheMiss {
+				log.Debugf("manifest cache miss during comparison for application %s in repo %s from revision %s", request.AppName, repo.Repo, syncedRevision)
+        return &apiclient.UpdateRevisionForPathsResponse{}, nil
+			}
 			log.Warnf("manifest cache get error %s: %v", request.ApplicationSource.String(), err)
-			return &apiclient.CompareRevisionsResponse{}, nil
+			return &apiclient.UpdateRevisionForPathsResponse{}, nil
 		}
 
 		// Update revision in refSource
@@ -2737,13 +2741,13 @@ func (s *Service) CompareRevisions(_ context.Context, request *apiclient.Compare
 		err = s.cache.SetManifests(revision, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, refSourceCommitSHAs)
 		if err != nil {
 			log.Warnf("manifest cache set error %s: %v", request.ApplicationSource.String(), err)
-			return &apiclient.CompareRevisionsResponse{}, nil
+			return &apiclient.UpdateRevisionForPathsResponse{}, nil
 		}
 
 		log.Debugf("manifest cache updated for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
-		return &apiclient.CompareRevisionsResponse{Updated: true}, nil
+		return &apiclient.UpdateRevisionForPathsResponse{}, nil
 	}
 
 	log.Debugf("changes found for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
-	return &apiclient.CompareRevisionsResponse{Changed: true}, nil
+	return &apiclient.UpdateRevisionForPathsResponse{Changed: true}, nil
 }

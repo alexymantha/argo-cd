@@ -2142,7 +2142,7 @@ func (m *GitDirectoriesResponse) GetPaths() []string {
 	return nil
 }
 
-type CompareRevisionsRequest struct {
+type UpdateRevisionForPathsRequest struct {
 	Repo                 *v1alpha1.Repository           `protobuf:"bytes,1,opt,name=repo,proto3" json:"repo,omitempty"`
 	AppLabelKey          string                         `protobuf:"bytes,2,opt,name=appLabelKey,proto3" json:"appLabelKey,omitempty"`
 	AppName              string                         `protobuf:"bytes,3,opt,name=appName,proto3" json:"appName,omitempty"`
@@ -2161,16 +2161,16 @@ type CompareRevisionsRequest struct {
 	XXX_sizecache        int32                          `json:"-"`
 }
 
-func (m *CompareRevisionsRequest) Reset()         { *m = CompareRevisionsRequest{} }
-func (m *CompareRevisionsRequest) String() string { return proto.CompactTextString(m) }
-func (*CompareRevisionsRequest) ProtoMessage()    {}
-func (*CompareRevisionsRequest) Descriptor() ([]byte, []int) {
+func (m *UpdateRevisionForPathsRequest) Reset()         { *m = UpdateRevisionForPathsRequest{} }
+func (m *UpdateRevisionForPathsRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateRevisionForPathsRequest) ProtoMessage()    {}
+func (*UpdateRevisionForPathsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_dd8723cfcc820480, []int{31}
 }
-func (m *CompareRevisionsRequest) XXX_Unmarshal(b []byte) error {
+func (m *UpdateRevisionForPathsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *CompareRevisionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *UpdateRevisionForPathsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_CompareRevisionsRequest.Marshal(b, m, deterministic)
 	} else {
@@ -2182,110 +2182,110 @@ func (m *CompareRevisionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *CompareRevisionsRequest) XXX_Merge(src proto.Message) {
+func (m *UpdateRevisionForPathsRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_CompareRevisionsRequest.Merge(m, src)
 }
-func (m *CompareRevisionsRequest) XXX_Size() int {
+func (m *UpdateRevisionForPathsRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *CompareRevisionsRequest) XXX_DiscardUnknown() {
+func (m *UpdateRevisionForPathsRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_CompareRevisionsRequest.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_CompareRevisionsRequest proto.InternalMessageInfo
 
-func (m *CompareRevisionsRequest) GetRepo() *v1alpha1.Repository {
+func (m *UpdateRevisionForPathsRequest) GetRepo() *v1alpha1.Repository {
 	if m != nil {
 		return m.Repo
 	}
 	return nil
 }
 
-func (m *CompareRevisionsRequest) GetAppLabelKey() string {
+func (m *UpdateRevisionForPathsRequest) GetAppLabelKey() string {
 	if m != nil {
 		return m.AppLabelKey
 	}
 	return ""
 }
 
-func (m *CompareRevisionsRequest) GetAppName() string {
+func (m *UpdateRevisionForPathsRequest) GetAppName() string {
 	if m != nil {
 		return m.AppName
 	}
 	return ""
 }
 
-func (m *CompareRevisionsRequest) GetNamespace() string {
+func (m *UpdateRevisionForPathsRequest) GetNamespace() string {
 	if m != nil {
 		return m.Namespace
 	}
 	return ""
 }
 
-func (m *CompareRevisionsRequest) GetApplicationSource() *v1alpha1.ApplicationSource {
+func (m *UpdateRevisionForPathsRequest) GetApplicationSource() *v1alpha1.ApplicationSource {
 	if m != nil {
 		return m.ApplicationSource
 	}
 	return nil
 }
 
-func (m *CompareRevisionsRequest) GetTrackingMethod() string {
+func (m *UpdateRevisionForPathsRequest) GetTrackingMethod() string {
 	if m != nil {
 		return m.TrackingMethod
 	}
 	return ""
 }
 
-func (m *CompareRevisionsRequest) GetRefSources() map[string]*v1alpha1.RefTarget {
+func (m *UpdateRevisionForPathsRequest) GetRefSources() map[string]*v1alpha1.RefTarget {
 	if m != nil {
 		return m.RefSources
 	}
 	return nil
 }
 
-func (m *CompareRevisionsRequest) GetKubeVersion() string {
+func (m *UpdateRevisionForPathsRequest) GetKubeVersion() string {
 	if m != nil {
 		return m.KubeVersion
 	}
 	return ""
 }
 
-func (m *CompareRevisionsRequest) GetApiVersions() []string {
+func (m *UpdateRevisionForPathsRequest) GetApiVersions() []string {
 	if m != nil {
 		return m.ApiVersions
 	}
 	return nil
 }
 
-func (m *CompareRevisionsRequest) GetHasMultipleSources() bool {
+func (m *UpdateRevisionForPathsRequest) GetHasMultipleSources() bool {
 	if m != nil {
 		return m.HasMultipleSources
 	}
 	return false
 }
 
-func (m *CompareRevisionsRequest) GetSyncedRevision() string {
+func (m *UpdateRevisionForPathsRequest) GetSyncedRevision() string {
 	if m != nil {
 		return m.SyncedRevision
 	}
 	return ""
 }
 
-func (m *CompareRevisionsRequest) GetRevision() string {
+func (m *UpdateRevisionForPathsRequest) GetRevision() string {
 	if m != nil {
 		return m.Revision
 	}
 	return ""
 }
 
-func (m *CompareRevisionsRequest) GetPaths() []string {
+func (m *UpdateRevisionForPathsRequest) GetPaths() []string {
 	if m != nil {
 		return m.Paths
 	}
 	return nil
 }
 
-type CompareRevisionsResponse struct {
+type UpdateRevisionForPathsResponse struct {
 	Changed              bool     `protobuf:"varint,1,opt,name=changed,proto3" json:"changed,omitempty"`
 	Updated              bool     `protobuf:"varint,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -2293,16 +2293,16 @@ type CompareRevisionsResponse struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CompareRevisionsResponse) Reset()         { *m = CompareRevisionsResponse{} }
-func (m *CompareRevisionsResponse) String() string { return proto.CompactTextString(m) }
-func (*CompareRevisionsResponse) ProtoMessage()    {}
-func (*CompareRevisionsResponse) Descriptor() ([]byte, []int) {
+func (m *UpdateRevisionForPathsResponse) Reset()         { *m = UpdateRevisionForPathsResponse{} }
+func (m *UpdateRevisionForPathsResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateRevisionForPathsResponse) ProtoMessage()    {}
+func (*UpdateRevisionForPathsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_dd8723cfcc820480, []int{32}
 }
-func (m *CompareRevisionsResponse) XXX_Unmarshal(b []byte) error {
+func (m *UpdateRevisionForPathsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *CompareRevisionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *UpdateRevisionForPathsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_CompareRevisionsResponse.Marshal(b, m, deterministic)
 	} else {
@@ -2314,26 +2314,26 @@ func (m *CompareRevisionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]
 		return b[:n], nil
 	}
 }
-func (m *CompareRevisionsResponse) XXX_Merge(src proto.Message) {
+func (m *UpdateRevisionForPathsResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_CompareRevisionsResponse.Merge(m, src)
 }
-func (m *CompareRevisionsResponse) XXX_Size() int {
+func (m *UpdateRevisionForPathsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *CompareRevisionsResponse) XXX_DiscardUnknown() {
+func (m *UpdateRevisionForPathsResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_CompareRevisionsResponse.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_CompareRevisionsResponse proto.InternalMessageInfo
 
-func (m *CompareRevisionsResponse) GetChanged() bool {
+func (m *UpdateRevisionForPathsResponse) GetChanged() bool {
 	if m != nil {
 		return m.Changed
 	}
 	return false
 }
 
-func (m *CompareRevisionsResponse) GetUpdated() bool {
+func (m *UpdateRevisionForPathsResponse) GetUpdated() bool {
 	if m != nil {
 		return m.Updated
 	}
@@ -2380,9 +2380,9 @@ func init() {
 	proto.RegisterMapType((map[string][]byte)(nil), "repository.GitFilesResponse.MapEntry")
 	proto.RegisterType((*GitDirectoriesRequest)(nil), "repository.GitDirectoriesRequest")
 	proto.RegisterType((*GitDirectoriesResponse)(nil), "repository.GitDirectoriesResponse")
-	proto.RegisterType((*CompareRevisionsRequest)(nil), "repository.CompareRevisionsRequest")
+	proto.RegisterType((*UpdateRevisionForPathsRequest)(nil), "repository.CompareRevisionsRequest")
 	proto.RegisterMapType((map[string]*v1alpha1.RefTarget)(nil), "repository.CompareRevisionsRequest.RefSourcesEntry")
-	proto.RegisterType((*CompareRevisionsResponse)(nil), "repository.CompareRevisionsResponse")
+	proto.RegisterType((*UpdateRevisionForPathsResponse)(nil), "repository.CompareRevisionsResponse")
 }
 
 func init() {
@@ -2573,8 +2573,8 @@ type RepoServerServiceClient interface {
 	GetGitFiles(ctx context.Context, in *GitFilesRequest, opts ...grpc.CallOption) (*GitFilesResponse, error)
 	// GetGitDirectories returns a set of directory paths for the given repo
 	GetGitDirectories(ctx context.Context, in *GitDirectoriesRequest, opts ...grpc.CallOption) (*GitDirectoriesResponse, error)
-	// CompareRevisions will compare two revisions and return whether there were relevant changes based on the paths provided
-	CompareRevisions(ctx context.Context, in *CompareRevisionsRequest, opts ...grpc.CallOption) (*CompareRevisionsResponse, error)
+	// UpdateRevisionForPaths will compare two revisions and return whether there were relevant changes based on the paths provided
+	UpdateRevisionForPaths(ctx context.Context, in *UpdateRevisionForPathsRequest, opts ...grpc.CallOption) (*UpdateRevisionForPathsResponse, error)
 }
 
 type repoServerServiceClient struct {
@@ -2727,8 +2727,8 @@ func (c *repoServerServiceClient) GetGitDirectories(ctx context.Context, in *Git
 	return out, nil
 }
 
-func (c *repoServerServiceClient) CompareRevisions(ctx context.Context, in *CompareRevisionsRequest, opts ...grpc.CallOption) (*CompareRevisionsResponse, error) {
-	out := new(CompareRevisionsResponse)
+func (c *repoServerServiceClient) UpdateRevisionForPaths(ctx context.Context, in *UpdateRevisionForPathsRequest, opts ...grpc.CallOption) (*UpdateRevisionForPathsResponse, error) {
+	out := new(UpdateRevisionForPathsResponse)
 	err := c.cc.Invoke(ctx, "/repository.RepoServerService/CompareRevisions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2765,7 +2765,7 @@ type RepoServerServiceServer interface {
 	// GetGitDirectories returns a set of directory paths for the given repo
 	GetGitDirectories(context.Context, *GitDirectoriesRequest) (*GitDirectoriesResponse, error)
 	// CompareRevisions will compare two revisions and return whether there were relevant changes based on the paths provided
-	CompareRevisions(context.Context, *CompareRevisionsRequest) (*CompareRevisionsResponse, error)
+	CompareRevisions(context.Context, *UpdateRevisionForPathsRequest) (*UpdateRevisionForPathsResponse, error)
 }
 
 // UnimplementedRepoServerServiceServer can be embedded to have forward compatible implementations.
@@ -2811,7 +2811,7 @@ func (*UnimplementedRepoServerServiceServer) GetGitFiles(ctx context.Context, re
 func (*UnimplementedRepoServerServiceServer) GetGitDirectories(ctx context.Context, req *GitDirectoriesRequest) (*GitDirectoriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGitDirectories not implemented")
 }
-func (*UnimplementedRepoServerServiceServer) CompareRevisions(ctx context.Context, req *CompareRevisionsRequest) (*CompareRevisionsResponse, error) {
+func (*UnimplementedRepoServerServiceServer) CompareRevisions(ctx context.Context, req *UpdateRevisionForPathsRequest) (*UpdateRevisionForPathsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompareRevisions not implemented")
 }
 
@@ -3062,7 +3062,7 @@ func _RepoServerService_GetGitDirectories_Handler(srv interface{}, ctx context.C
 }
 
 func _RepoServerService_CompareRevisions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CompareRevisionsRequest)
+	in := new(UpdateRevisionForPathsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3074,7 +3074,7 @@ func _RepoServerService_CompareRevisions_Handler(srv interface{}, ctx context.Co
 		FullMethod: "/repository.RepoServerService/CompareRevisions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RepoServerServiceServer).CompareRevisions(ctx, req.(*CompareRevisionsRequest))
+		return srv.(RepoServerServiceServer).CompareRevisions(ctx, req.(*UpdateRevisionForPathsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5116,7 +5116,7 @@ func (m *GitDirectoriesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *CompareRevisionsRequest) Marshal() (dAtA []byte, err error) {
+func (m *UpdateRevisionForPathsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -5126,12 +5126,12 @@ func (m *CompareRevisionsRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CompareRevisionsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *UpdateRevisionForPathsRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompareRevisionsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *UpdateRevisionForPathsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -5270,7 +5270,7 @@ func (m *CompareRevisionsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *CompareRevisionsResponse) Marshal() (dAtA []byte, err error) {
+func (m *UpdateRevisionForPathsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -5280,12 +5280,12 @@ func (m *CompareRevisionsResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CompareRevisionsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *UpdateRevisionForPathsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompareRevisionsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *UpdateRevisionForPathsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -6206,7 +6206,7 @@ func (m *GitDirectoriesResponse) Size() (n int) {
 	return n
 }
 
-func (m *CompareRevisionsRequest) Size() (n int) {
+func (m *UpdateRevisionForPathsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -6282,7 +6282,7 @@ func (m *CompareRevisionsRequest) Size() (n int) {
 	return n
 }
 
-func (m *CompareRevisionsResponse) Size() (n int) {
+func (m *UpdateRevisionForPathsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -11840,7 +11840,7 @@ func (m *GitDirectoriesResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CompareRevisionsRequest) Unmarshal(dAtA []byte) error {
+func (m *UpdateRevisionForPathsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -12400,7 +12400,7 @@ func (m *CompareRevisionsRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CompareRevisionsResponse) Unmarshal(dAtA []byte) error {
+func (m *UpdateRevisionForPathsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {

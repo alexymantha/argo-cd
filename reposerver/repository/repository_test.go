@@ -3127,24 +3127,24 @@ func TestGetGitFiles(t *testing.T) {
 	assert.Equal(t, expected, fileResponse.GetMap())
 }
 
-func TestErrorCompareRevisions(t *testing.T) {
+func TestErrorUpdateRevisionForPaths(t *testing.T) {
 	type fields struct {
 		service *Service
 	}
 	type args struct {
 		ctx     context.Context
-		request *apiclient.CompareRevisionsRequest
+		request *apiclient.UpdateRevisionForPathsRequest
 	}
 	tests := []struct {
 		name    string
 		fields  fields
 		args    args
-		want    *apiclient.CompareRevisionsResponse
+		want    *apiclient.UpdateRevisionForPathsResponse
 		wantErr assert.ErrorAssertionFunc
 	}{
 		{name: "InvalidRepo", fields: fields{service: newService(".")}, args: args{
 			ctx: context.TODO(),
-			request: &apiclient.CompareRevisionsRequest{
+			request: &apiclient.UpdateRevisionForPathsRequest{
 				Repo:           nil,
 				Revision:       "HEAD",
 				SyncedRevision: "sadfsadf",
@@ -3160,7 +3160,7 @@ func TestErrorCompareRevisions(t *testing.T) {
 			return s
 		}()}, args: args{
 			ctx: context.TODO(),
-			request: &apiclient.CompareRevisionsRequest{
+			request: &apiclient.UpdateRevisionForPathsRequest{
 				Repo:           &argoappv1.Repository{Repo: "not-a-valid-url"},
 				Revision:       "sadfsadf",
 				SyncedRevision: "HEAD",
@@ -3178,7 +3178,7 @@ func TestErrorCompareRevisions(t *testing.T) {
 			return s
 		}()}, args: args{
 			ctx: context.TODO(),
-			request: &apiclient.CompareRevisionsRequest{
+			request: &apiclient.UpdateRevisionForPathsRequest{
 				Repo:           &argoappv1.Repository{Repo: "not-a-valid-url"},
 				Revision:       "HEAD",
 				SyncedRevision: "sadfsadf",
@@ -3189,29 +3189,35 @@ func TestErrorCompareRevisions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := tt.fields.service
-			got, err := s.CompareRevisions(tt.args.ctx, tt.args.request)
-			if !tt.wantErr(t, err, fmt.Sprintf("CompareRevisions(%v, %v)", tt.args.ctx, tt.args.request)) {
+			got, err := s.UpdateRevisionForPaths(tt.args.ctx, tt.args.request)
+			if !tt.wantErr(t, err, fmt.Sprintf("UpdateRevisionForPaths(%v, %v)", tt.args.ctx, tt.args.request)) {
 				return
 			}
-			assert.Equalf(t, tt.want, got, "CompareRevisions(%v, %v)", tt.args.ctx, tt.args.request)
+			assert.Equalf(t, tt.want, got, "UpdateRevisionForPaths(%v, %v)", tt.args.ctx, tt.args.request)
 		})
 	}
 }
 
-func TestCompareRevisions(t *testing.T) {
+func TestUpdateRevisionForPaths(t *testing.T) {
 	type fields struct {
 		service *Service
 	}
 	type args struct {
 		ctx     context.Context
-		request *apiclient.CompareRevisionsRequest
+		request *apiclient.UpdateRevisionForPathsRequest
+	}
+	type cacheHit struct {
+		hit              bool
+		revision         string
+		previousRevision string
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *apiclient.CompareRevisionsResponse
-		wantErr assert.ErrorAssertionFunc
+		name     string
+		fields   fields
+		args     args
+		want     *apiclient.UpdateRevisionForPathsResponse
+		wantErr  assert.ErrorAssertionFunc
+		cacheHit *cacheHit
 	}{
 		{name: "NoPathAbort", fields: fields{service: func() *Service {
 			s, _ := newServiceWithOpt(func(gitClient *gitmocks.Client, helmClient *helmmocks.Client, paths *iomocks.TempPaths) {
@@ -3220,11 +3226,11 @@ func TestCompareRevisions(t *testing.T) {
 			return s
 		}()}, args: args{
 			ctx: context.TODO(),
-			request: &apiclient.CompareRevisionsRequest{
+			request: &apiclient.UpdateRevisionForPathsRequest{
 				Repo:  &argoappv1.Repository{Repo: "a-url.com"},
 				Paths: []string{},
 			},
-		}, want: &apiclient.CompareRevisionsResponse{}, wantErr: assert.NoError},
+		}, want: &apiclient.UpdateRevisionForPathsResponse{}, wantErr: assert.NoError},
 		{name: "SameResolvedRevisionAbort", fields: fields{service: func() *Service {
 			s, _ := newServiceWithOpt(func(gitClient *gitmocks.Client, helmClient *helmmocks.Client, paths *iomocks.TempPaths) {
 				gitClient.On("Checkout", mock.Anything, mock.Anything).Return(nil)
@@ -3236,13 +3242,13 @@ func TestCompareRevisions(t *testing.T) {
 			return s
 		}()}, args: args{
 			ctx: context.TODO(),
-			request: &apiclient.CompareRevisionsRequest{
+			request: &apiclient.UpdateRevisionForPathsRequest{
 				Repo:           &argoappv1.Repository{Repo: "a-url.com"},
 				Revision:       "HEAD",
 				SyncedRevision: "SYNCEDHEAD",
 				Paths:          []string{"."},
 			},
-		}, want: &apiclient.CompareRevisionsResponse{}, wantErr: assert.NoError},
+		}, want: &apiclient.UpdateRevisionForPathsResponse{}, wantErr: assert.NoError},
 		{name: "ChangedFilesDoNothing", fields: fields{service: func() *Service {
 			s, _ := newServiceWithOpt(func(gitClient *gitmocks.Client, helmClient *helmmocks.Client, paths *iomocks.TempPaths) {
 				gitClient.On("Init").Return(nil)
@@ -3258,13 +3264,13 @@ func TestCompareRevisions(t *testing.T) {
 			return s
 		}()}, args: args{
 			ctx: context.TODO(),
-			request: &apiclient.CompareRevisionsRequest{
+			request: &apiclient.UpdateRevisionForPathsRequest{
 				Repo:           &argoappv1.Repository{Repo: "a-url.com"},
 				Revision:       "HEAD",
 				SyncedRevision: "SYNCEDHEAD",
 				Paths:          []string{"."},
 			},
-		}, want: &apiclient.CompareRevisionsResponse{
+		}, want: &apiclient.UpdateRevisionForPathsResponse{
 			Changed: true,
 		}, wantErr: assert.NoError},
 		{name: "NoChangesUpdateCache", fields: fields{service: func() *Service {
@@ -3282,7 +3288,7 @@ func TestCompareRevisions(t *testing.T) {
 			return s
 		}()}, args: args{
 			ctx: context.TODO(),
-			request: &apiclient.CompareRevisionsRequest{
+			request: &apiclient.UpdateRevisionForPathsRequest{
 				Repo:           &argoappv1.Repository{Repo: "a-url.com"},
 				Revision:       "HEAD",
 				SyncedRevision: "SYNCEDHEAD",
@@ -3295,9 +3301,11 @@ func TestCompareRevisions(t *testing.T) {
 				ApplicationSource: &argoappv1.ApplicationSource{Path: "."},
 				KubeVersion:       "v1.16.0",
 			},
-		}, want: &apiclient.CompareRevisionsResponse{
-			Updated: true,
-		}, wantErr: assert.NoError},
+		}, want: &apiclient.UpdateRevisionForPathsResponse{}, wantErr: assert.NoError, cacheHit: &cacheHit{
+			hit:              true,
+			previousRevision: "1e67a504d03def3a6a1125d934cb511680f72555",
+			revision:         "632039659e542ed7de0c170a4fcc1c571b288fc0",
+		}},
 		{name: "NoChangesHelmMultiSourceUpdateCache", fields: fields{service: func() *Service {
 			s, _ := newServiceWithOpt(func(gitClient *gitmocks.Client, helmClient *helmmocks.Client, paths *iomocks.TempPaths) {
 				gitClient.On("Init").Return(nil)
@@ -3313,7 +3321,7 @@ func TestCompareRevisions(t *testing.T) {
 			return s
 		}()}, args: args{
 			ctx: context.TODO(),
-			request: &apiclient.CompareRevisionsRequest{
+			request: &apiclient.UpdateRevisionForPathsRequest{
 				Repo:           &argoappv1.Repository{Repo: "a-url.com"},
 				Revision:       "HEAD",
 				SyncedRevision: "SYNCEDHEAD",
@@ -3328,18 +3336,41 @@ func TestCompareRevisions(t *testing.T) {
 
 				HasMultipleSources: true,
 			},
-		}, want: &apiclient.CompareRevisionsResponse{
-			Updated: true,
-		}, wantErr: assert.NoError},
+		}, want: &apiclient.UpdateRevisionForPathsResponse{}, wantErr: assert.NoError, cacheHit: &cacheHit{
+			hit:              true,
+			previousRevision: "1e67a504d03def3a6a1125d934cb511680f72555",
+			revision:         "632039659e542ed7de0c170a4fcc1c571b288fc0",
+		}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := tt.fields.service
-			got, err := s.CompareRevisions(tt.args.ctx, tt.args.request)
-			if !tt.wantErr(t, err, fmt.Sprintf("CompareRevisions(%v, %v)", tt.args.ctx, tt.args.request)) {
+			manifestRequest := tt.args.request
+
+			// Set cache
+			if tt.cacheHit != nil && tt.cacheHit.previousRevision != "" {
+				res := &cache.CachedManifestResponse{
+					ManifestResponse: &apiclient.ManifestResponse{},
+				}
+				err := s.cache.SetManifests(tt.cacheHit.previousRevision, manifestRequest.ApplicationSource, manifestRequest.RefSources, manifestRequest, manifestRequest.Namespace, manifestRequest.TrackingMethod, manifestRequest.AppLabelKey, manifestRequest.AppName, res, nil)
+				require.NoError(t, err)
+			}
+
+			got, err := s.UpdateRevisionForPaths(tt.args.ctx, tt.args.request)
+			if !tt.wantErr(t, err, fmt.Sprintf("UpdateRevisionForPaths(%v, %v)", tt.args.ctx, tt.args.request)) {
 				return
 			}
-			assert.Equalf(t, tt.want, got, "CompareRevisions(%v, %v)", tt.args.ctx, tt.args.request)
+			assert.Equalf(t, tt.want, got, "UpdateRevisionForPaths(%v, %v)", tt.args.ctx, tt.args.request)
+
+			if tt.cacheHit != nil {
+				cachedManifestResponse := &cache.CachedManifestResponse{}
+				err = s.cache.GetManifests(tt.cacheHit.revision, manifestRequest.ApplicationSource, manifestRequest.RefSources, manifestRequest, manifestRequest.Namespace, manifestRequest.TrackingMethod, manifestRequest.AppLabelKey, manifestRequest.AppName, cachedManifestResponse, nil)
+				if tt.cacheHit.hit {
+					require.NoError(t, err)
+				} else {
+					require.ErrorIs(t, err, cache.ErrCacheMiss)
+				}
+			}
 		})
 	}
 }
