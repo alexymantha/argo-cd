@@ -787,39 +787,39 @@ func (s *Service) getRepoRefs(appSource *v1alpha1.ApplicationSource, srcRefs v1a
 			refSourceMapping, ok := srcRefs[refVar]
 			if !ok {
 				if len(srcRefs) == 0 {
-					return map[string]repoRef{}, fmt.Errorf("source referenced %q, but no source has a 'ref' field defined", refVar)
+					return nil, fmt.Errorf("source referenced %q, but no source has a 'ref' field defined", refVar)
 				}
 				refKeys := make([]string, 0)
 				for refKey := range srcRefs {
 					refKeys = append(refKeys, refKey)
 				}
-				return map[string]repoRef{}, fmt.Errorf("source referenced %q, which is not one of the available sources (%s)", refVar, strings.Join(refKeys, ", "))
+				return nil, fmt.Errorf("source referenced %q, which is not one of the available sources (%s)", refVar, strings.Join(refKeys, ", "))
 			}
 			if refSourceMapping.Chart != "" {
-				return map[string]repoRef{}, fmt.Errorf("source has a 'chart' field defined, but Helm charts are not yet not supported for 'ref' sources")
+				return nil, fmt.Errorf("source has a 'chart' field defined, but Helm charts are not yet not supported for 'ref' sources")
 			}
 			normalizedRepoURL := git.NormalizeGitURL(refSourceMapping.Repo.Repo)
 			closer, ok := repoRefs[normalizedRepoURL]
 			if ok {
 				if closer.revision != refSourceMapping.TargetRevision {
-					return map[string]repoRef{}, fmt.Errorf("cannot reference multiple revisions for the same repository (%s references %q while %s references %q)", refVar, refSourceMapping.TargetRevision, closer.key, closer.revision)
+					return nil, fmt.Errorf("cannot reference multiple revisions for the same repository (%s references %q while %s references %q)", refVar, refSourceMapping.TargetRevision, closer.key, closer.revision)
 				}
 			} else {
 				gitClient, referencedCommitSHA, err := s.newClientResolveRevision(&refSourceMapping.Repo, refSourceMapping.TargetRevision)
 				if err != nil {
 					log.Errorf("Failed to get git client for repo %s: %v", refSourceMapping.Repo.Repo, err)
-					return map[string]repoRef{}, fmt.Errorf("failed to get git client for repo %s", refSourceMapping.Repo.Repo)
+					return nil, fmt.Errorf("failed to get git client for repo %s", refSourceMapping.Repo.Repo)
 				}
 
 				if git.NormalizeGitURL(appSource.RepoURL) == normalizedRepoURL && commitSHA != referencedCommitSHA {
-					return map[string]repoRef{}, fmt.Errorf("cannot reference a different revision of the same repository (%s references %q which resolves to %q while the application references %q which resolves to %q)", refVar, refSourceMapping.TargetRevision, referencedCommitSHA, revision, commitSHA)
+					return nil, fmt.Errorf("cannot reference a different revision of the same repository (%s references %q which resolves to %q while the application references %q which resolves to %q)", refVar, refSourceMapping.TargetRevision, referencedCommitSHA, revision, commitSHA)
 				}
 				closer, err := s.repoLock.Lock(gitClient.Root(), referencedCommitSHA, true, func() (goio.Closer, error) {
 					return s.checkoutRevision(gitClient, referencedCommitSHA, s.initConstants.SubmoduleEnabled)
 				})
 				if err != nil {
 					log.Errorf("failed to acquire lock for referenced source %s", normalizedRepoURL)
-					return map[string]repoRef{}, err
+					return nil, err
 				}
 				defer func(closer goio.Closer) {
 					err := closer.Close()
@@ -840,9 +840,9 @@ func (s *Service) getRepoRefs(appSource *v1alpha1.ApplicationSource, srcRefs v1a
 								"revision":           refSourceMapping.TargetRevision,
 								"file":               oobError.File,
 							}).Warn("repository contains out-of-bounds symlink")
-							return map[string]repoRef{}, fmt.Errorf("repository contains out-of-bounds symlinks. file: %s", oobError.File)
+							return nil, fmt.Errorf("repository contains out-of-bounds symlinks. file: %s", oobError.File)
 						} else {
-							return map[string]repoRef{}, err
+							return nil, err
 						}
 					}
 				}
