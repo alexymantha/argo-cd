@@ -2704,7 +2704,7 @@ func (s *Service) UpdateRevisionForPaths(_ context.Context, request *apiclient.U
 	changed := apppathutil.AppFilesHaveChanged(refreshPaths, files)
 
 	if !changed {
-    log.Debugf("no changes found for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
+		log.Debugf("no changes found for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
 
 		err := s.updateCachedRevision(syncedRevision, revision, request)
 		if err != nil {
@@ -2713,7 +2713,7 @@ func (s *Service) UpdateRevisionForPaths(_ context.Context, request *apiclient.U
 			return &apiclient.UpdateRevisionForPathsResponse{}, nil
 		}
 
-    return &apiclient.UpdateRevisionForPathsResponse{}, nil
+		return &apiclient.UpdateRevisionForPathsResponse{}, nil
 	}
 
 	log.Debugf("changes found for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
