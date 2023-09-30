@@ -2704,12 +2704,16 @@ func (s *Service) UpdateRevisionForPaths(_ context.Context, request *apiclient.U
 	changed := apppathutil.AppFilesHaveChanged(refreshPaths, files)
 
 	if !changed {
+    log.Debugf("no changes found for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
+
 		err := s.updateCachedRevision(syncedRevision, revision, request)
 		if err != nil {
 			// Only warn with the error, no need to block anything if there is a caching error.
 			log.Warnf("error updating cached revision for repo %s with revision %s: %v", repo.Repo, revision, err)
 			return &apiclient.UpdateRevisionForPathsResponse{}, nil
 		}
+
+    return &apiclient.UpdateRevisionForPathsResponse{}, nil
 	}
 
 	log.Debugf("changes found for application %s in repo %s from revision %s to revision %s", request.AppName, repo.Repo, syncedRevision, revision)
