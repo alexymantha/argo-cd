@@ -517,7 +517,7 @@ func TestCompareAppStateWithManifestGeneratePath(t *testing.T) {
 	assert.NotNil(t, compRes)
 	assert.Equal(t, argoappv1.SyncStatusCodeSynced, compRes.syncStatus.Status)
 	assert.Equal(t, "abc123", compRes.syncStatus.Revision)
-	ctrl.repoClientset.(*mockrepoclient.Clientset).RepoServerServiceClient.(*mockrepoclient.RepoServerServiceClient).AssertNumberOfCalls(t, "UpdateRevisionForPathsResponse", 1)
+	ctrl.repoClientset.(*mockrepoclient.Clientset).RepoServerServiceClient.(*mockrepoclient.RepoServerServiceClient).AssertNumberOfCalls(t, "UpdateRevisionForPaths", 1)
 }
 
 func TestSetHealth(t *testing.T) {
