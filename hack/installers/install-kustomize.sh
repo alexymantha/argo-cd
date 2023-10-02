@@ -15,11 +15,6 @@ if [ -z $INSTALL_OS ]; then
     exit 1
 fi
 
-# Use amd64 for arm64 darwin, as there is no arm64 darwin binary for kustomize yet
-if [ "$INSTALL_OS" = "darwin" ] && [ "$ARCHITECTURE" = "arm64" ]; then
-    ARCHITECTURE="amd64" 
-fi
-
 # Note that kustomize release URIs have changed for v3.2.1. Then again for
 # v3.3.0. When upgrading to versions >= v3.3.0 please change the URI format. And
 # also note that as of version v3.3.0, assets are in .tar.gz form.
