@@ -29,7 +29,6 @@ import (
 	"github.com/argoproj/argo-cd/v2/util/app/path"
 	"github.com/argoproj/argo-cd/v2/util/argo"
 	"github.com/argoproj/argo-cd/v2/util/db"
-	"github.com/argoproj/argo-cd/v2/util/glob"
 	"github.com/argoproj/argo-cd/v2/util/settings"
 )
 
