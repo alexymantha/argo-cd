@@ -2726,7 +2726,7 @@ func (s *Service) updateCachedRevision(oldRev, newRev string, request *apiclient
 		var err error
 		repoRefs, err = resolveReferencedSources(true, request.ApplicationSource.Helm, request.RefSources, s.newClientResolveRevision)
 		if err != nil {
-			return fmt.Errorf("failed to get repo refs for application %s in repo %s from revision %s: %w", request.AppName, request.GetRepo(), request.Revision, err)
+			return fmt.Errorf("failed to get repo refs for application %s in repo %s from revision %s: %w", request.AppName, request.GetRepo().Repo, request.Revision, err)
 		}
 	}
 
@@ -2734,7 +2734,7 @@ func (s *Service) updateCachedRevision(oldRev, newRev string, request *apiclient
 	err := s.cache.GetManifests(oldRev, request.ApplicationSource, request.RefSources, request, request.Namespace, request.TrackingMethod, request.AppLabelKey, request.AppName, manifest, repoRefs)
 	if err != nil {
 		if err == cache.ErrCacheMiss {
-			log.Debugf("manifest cache miss during comparison for application %s in repo %s from revision %s", request.AppName, request.GetRepo(), oldRev)
+			log.Debugf("manifest cache miss during comparison for application %s in repo %s from revision %s", request.AppName, request.GetRepo().Repo, oldRev)
 			return nil
 		}
 		return fmt.Errorf("manifest cache set error for %s: %w", request.AppName, err)
@@ -2752,6 +2752,6 @@ func (s *Service) updateCachedRevision(oldRev, newRev string, request *apiclient
 		return fmt.Errorf("manifest cache set error for %s: %w", request.AppName, err)
 	}
 
-	log.Debugf("manifest cache updated for application %s in repo %s from revision %s to revision %s", request.AppName, request.GetRepo(), oldRev, newRev)
+	log.Debugf("manifest cache updated for application %s in repo %s from revision %s to revision %s", request.AppName, request.GetRepo().Repo, oldRev, newRev)
 	return nil
 }
