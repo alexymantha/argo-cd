@@ -12,6 +12,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	"github.com/argoproj/argo-cd/v2/reposerver/apiclient"
+	"github.com/argoproj/argo-cd/v2/util/profile"
 	"github.com/argoproj/argo-cd/v2/util/tls"
 
 	"github.com/argoproj/argo-cd/v2/applicationset/controllers"
@@ -266,6 +267,7 @@ func NewCommand() *cobra.Command {
 func startWebhookServer(webhookHandler *webhook.WebhookHandler, webhookAddr string) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/webhook", webhookHandler.Handler)
+	profile.RegisterProfiler(mux)
 	go func() {
 		log.Info("Starting webhook server")
 		err := http.ListenAndServe(webhookAddr, mux)
