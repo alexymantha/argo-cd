@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"net/http/pprof"
 	"os"
 	"time"
 
@@ -12,7 +13,6 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	"github.com/argoproj/argo-cd/v2/reposerver/apiclient"
-	"github.com/argoproj/argo-cd/v2/util/profile"
 	"github.com/argoproj/argo-cd/v2/util/tls"
 
 	"github.com/argoproj/argo-cd/v2/applicationset/controllers"
@@ -114,7 +114,11 @@ func NewCommand() *cobra.Command {
 				os.Exit(1)
 			}
 
-			mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+			cfg := ctrl.GetConfigOrDie()
+			cfg.QPS = 100
+			cfg.Burst = 150
+
+			mgr, err := ctrl.NewManager(cfg, ctrl.Options{
 				Scheme:                 scheme,
 				MetricsBindAddress:     metricsAddr,
 				Namespace:              watchedNamespace,
@@ -124,6 +128,8 @@ func NewCommand() *cobra.Command {
 				LeaderElectionID:       "58ac56fa.applicationsets.argoproj.io",
 				DryRunClient:           dryRun,
 			})
+			mgr.AddMetricsExtraHandler("/debug/pprof/", http.HandlerFunc(pprof.Index))
+			mgr.AddMetricsExtraHandler("/debug/pprof/profile", http.HandlerFunc(pprof.Profile))
 
 			if err != nil {
 				log.Error(err, "unable to start manager")
@@ -267,7 +273,6 @@ func NewCommand() *cobra.Command {
 func startWebhookServer(webhookHandler *webhook.WebhookHandler, webhookAddr string) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/webhook", webhookHandler.Handler)
-	profile.RegisterProfiler(mux)
 	go func() {
 		log.Info("Starting webhook server")
 		err := http.ListenAndServe(webhookAddr, mux)
