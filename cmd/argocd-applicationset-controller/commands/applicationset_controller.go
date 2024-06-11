@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"net/http/pprof"
 	"os"
 	"time"
 
@@ -113,7 +114,11 @@ func NewCommand() *cobra.Command {
 				os.Exit(1)
 			}
 
-			mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+			cfg := ctrl.GetConfigOrDie()
+			cfg.QPS = 100
+			cfg.Burst = 150
+
+			mgr, err := ctrl.NewManager(cfg, ctrl.Options{
 				Scheme:                 scheme,
 				MetricsBindAddress:     metricsAddr,
 				Namespace:              watchedNamespace,
@@ -123,6 +128,8 @@ func NewCommand() *cobra.Command {
 				LeaderElectionID:       "58ac56fa.applicationsets.argoproj.io",
 				DryRunClient:           dryRun,
 			})
+			mgr.AddMetricsExtraHandler("/debug/pprof/", http.HandlerFunc(pprof.Index))
+			mgr.AddMetricsExtraHandler("/debug/pprof/profile", http.HandlerFunc(pprof.Profile))
 
 			if err != nil {
 				log.Error(err, "unable to start manager")
