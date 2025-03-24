@@ -432,7 +432,7 @@ type DrySource struct {
 	// Lists of extra config files to be used when hydrating.
 	// Applied in the order they are defined.
 	// Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
-	ExtraConfigFiles []string `json:"extraConfigFiles" protobuf:"bytes,4,name=extraConfigFiles"`
+	ExtraConfigFiles []string `json:"extraConfigFiles,omitempty" protobuf:"bytes,4,opt,name=extraConfigFiles"`
 }
 
 // SyncSource specifies a location from which hydrated manifests may be synced. RepoURL is assumed based on the

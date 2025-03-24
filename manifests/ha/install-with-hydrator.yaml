@@ -1484,7 +1484,6 @@ spec:
                           to hydrate
                         type: string
                     required:
-                    - extraConfigFiles
                     - path
                     - repoURL
                     - targetRevision
@@ -4944,7 +4943,6 @@ spec:
                                   the source to hydrate
                                 type: string
                             required:
-                            - extraConfigFiles
                             - path
                             - repoURL
                             - targetRevision
@@ -5032,7 +5030,6 @@ spec:
                                   the source to hydrate
                                 type: string
                             required:
-                            - extraConfigFiles
                             - path
                             - repoURL
                             - targetRevision
@@ -6410,7 +6407,6 @@ spec:
                                         targetRevision:
                                           type: string
                                       required:
-                                      - extraConfigFiles
                                       - path
                                       - repoURL
                                       - targetRevision
@@ -7105,7 +7101,6 @@ spec:
                                         targetRevision:
                                           type: string
                                       required:
-                                      - extraConfigFiles
                                       - path
                                       - repoURL
                                       - targetRevision
@@ -7799,7 +7794,6 @@ spec:
                                         targetRevision:
                                           type: string
                                       required:
-                                      - extraConfigFiles
                                       - path
                                       - repoURL
                                       - targetRevision
@@ -8473,7 +8467,6 @@ spec:
                                         targetRevision:
                                           type: string
                                       required:
-                                      - extraConfigFiles
                                       - path
                                       - repoURL
                                       - targetRevision
@@ -9172,7 +9165,6 @@ spec:
                                                   targetRevision:
                                                     type: string
                                                 required:
-                                                - extraConfigFiles
                                                 - path
                                                 - repoURL
                                                 - targetRevision
@@ -9867,7 +9859,6 @@ spec:
                                                   targetRevision:
                                                     type: string
                                                 required:
-                                                - extraConfigFiles
                                                 - path
                                                 - repoURL
                                                 - targetRevision
@@ -10561,7 +10552,6 @@ spec:
                                                   targetRevision:
                                                     type: string
                                                 required:
-                                                - extraConfigFiles
                                                 - path
                                                 - repoURL
                                                 - targetRevision
@@ -11235,7 +11225,6 @@ spec:
                                                   targetRevision:
                                                     type: string
                                                 required:
-                                                - extraConfigFiles
                                                 - path
                                                 - repoURL
                                                 - targetRevision
@@ -11917,7 +11906,6 @@ spec:
                                                   targetRevision:
                                                     type: string
                                                 required:
-                                                - extraConfigFiles
                                                 - path
                                                 - repoURL
                                                 - targetRevision
@@ -12818,7 +12806,6 @@ spec:
                                                   targetRevision:
                                                     type: string
                                                 required:
-                                                - extraConfigFiles
                                                 - path
                                                 - repoURL
                                                 - targetRevision
@@ -13718,7 +13705,6 @@ spec:
                                                   targetRevision:
                                                     type: string
                                                 required:
-                                                - extraConfigFiles
                                                 - path
                                                 - repoURL
                                                 - targetRevision
@@ -14409,7 +14395,6 @@ spec:
                                         targetRevision:
                                           type: string
                                       required:
-                                      - extraConfigFiles
                                       - path
                                       - repoURL
                                       - targetRevision
@@ -15110,7 +15095,6 @@ spec:
                                                   targetRevision:
                                                     type: string
                                                 required:
-                                                - extraConfigFiles
                                                 - path
                                                 - repoURL
                                                 - targetRevision
@@ -15805,7 +15789,6 @@ spec:
                                                   targetRevision:
                                                     type: string
                                                 required:
-                                                - extraConfigFiles
                                                 - path
                                                 - repoURL
                                                 - targetRevision
@@ -16499,7 +16482,6 @@ spec:
                                                   targetRevision:
                                                     type: string
                                                 required:
-                                                - extraConfigFiles
                                                 - path
                                                 - repoURL
                                                 - targetRevision
@@ -17173,7 +17155,6 @@ spec:
                                                   targetRevision:
                                                     type: string
                                                 required:
-                                                - extraConfigFiles
                                                 - path
                                                 - repoURL
                                                 - targetRevision
@@ -17855,7 +17836,6 @@ spec:
                                                   targetRevision:
                                                     type: string
                                                 required:
-                                                - extraConfigFiles
                                                 - path
                                                 - repoURL
                                                 - targetRevision
@@ -18756,7 +18736,6 @@ spec:
                                                   targetRevision:
                                                     type: string
                                                 required:
-                                                - extraConfigFiles
                                                 - path
                                                 - repoURL
                                                 - targetRevision
@@ -19656,7 +19635,6 @@ spec:
                                                   targetRevision:
                                                     type: string
                                                 required:
-                                                - extraConfigFiles
                                                 - path
                                                 - repoURL
                                                 - targetRevision
@@ -20351,7 +20329,6 @@ spec:
                                         targetRevision:
                                           type: string
                                       required:
-                                      - extraConfigFiles
                                       - path
                                       - repoURL
                                       - targetRevision
@@ -21032,7 +21009,6 @@ spec:
                                         targetRevision:
                                           type: string
                                       required:
-                                      - extraConfigFiles
                                       - path
                                       - repoURL
                                       - targetRevision
@@ -21933,7 +21909,6 @@ spec:
                                         targetRevision:
                                           type: string
                                       required:
-                                      - extraConfigFiles
                                       - path
                                       - repoURL
                                       - targetRevision
@@ -22833,7 +22808,6 @@ spec:
                                         targetRevision:
                                           type: string
                                       required:
-                                      - extraConfigFiles
                                       - path
                                       - repoURL
                                       - targetRevision
@@ -23599,7 +23573,6 @@ spec:
                               targetRevision:
                                 type: string
                             required:
-                            - extraConfigFiles
                             - path
                             - repoURL
                             - targetRevision
