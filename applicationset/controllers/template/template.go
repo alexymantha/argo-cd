@@ -1,6 +1,7 @@
 package template
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -67,6 +68,8 @@ func GenerateApplications(logCtx *log.Entry, applicationSetInfo argov1alpha1.App
 				// security boundary.
 				app.Namespace = applicationSetInfo.Namespace
 				res = append(res, *app)
+				data, _ := json.MarshalIndent(app, "", "  ")
+				fmt.Println(string(data))
 			}
 		}
 		if log.IsLevelEnabled(log.DebugLevel) {

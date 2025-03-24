@@ -552,7 +552,6 @@ spec:
                           In case of Helm, this is a semver tag for the Chart's version.
                         type: string
                     required:
-                    - extraConfigFiles
                     - repoURL
                     type: object
                   sources:
@@ -950,7 +949,6 @@ spec:
                             In case of Helm, this is a semver tag for the Chart's version.
                           type: string
                       required:
-                      - extraConfigFiles
                       - repoURL
                       type: object
                     type: array
@@ -1454,7 +1452,6 @@ spec:
                       In case of Helm, this is a semver tag for the Chart's version.
                     type: string
                 required:
-                - extraConfigFiles
                 - repoURL
                 type: object
               sourceHydrator:
@@ -1912,7 +1909,6 @@ spec:
                         In case of Helm, this is a semver tag for the Chart's version.
                       type: string
                   required:
-                  - extraConfigFiles
                   - repoURL
                   type: object
                 type: array
@@ -2476,7 +2472,6 @@ spec:
                             In case of Helm, this is a semver tag for the Chart's version.
                           type: string
                       required:
-                      - extraConfigFiles
                       - repoURL
                       type: object
                     sources:
@@ -2881,7 +2876,6 @@ spec:
                               In case of Helm, this is a semver tag for the Chart's version.
                             type: string
                         required:
-                        - extraConfigFiles
                         - repoURL
                         type: object
                       type: array
@@ -3435,7 +3429,6 @@ spec:
                                   In case of Helm, this is a semver tag for the Chart's version.
                                 type: string
                             required:
-                            - extraConfigFiles
                             - repoURL
                             type: object
                           sources:
@@ -3859,7 +3852,6 @@ spec:
                                     In case of Helm, this is a semver tag for the Chart's version.
                                   type: string
                               required:
-                              - extraConfigFiles
                               - repoURL
                               type: object
                             type: array
@@ -4388,7 +4380,6 @@ spec:
                               In case of Helm, this is a semver tag for the Chart's version.
                             type: string
                         required:
-                        - extraConfigFiles
                         - repoURL
                         type: object
                       sources:
@@ -4802,7 +4793,6 @@ spec:
                                 In case of Helm, this is a semver tag for the Chart's version.
                               type: string
                           required:
-                          - extraConfigFiles
                           - repoURL
                           type: object
                         type: array
@@ -5570,7 +5560,6 @@ spec:
                               In case of Helm, this is a semver tag for the Chart's version.
                             type: string
                         required:
-                        - extraConfigFiles
                         - repoURL
                         type: object
                       sources:
@@ -5984,7 +5973,6 @@ spec:
                                 In case of Helm, this is a semver tag for the Chart's version.
                               type: string
                           required:
-                          - extraConfigFiles
                           - repoURL
                           type: object
                         type: array

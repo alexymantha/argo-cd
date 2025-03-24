@@ -386,7 +386,6 @@ spec:
                                     targetRevision:
                                       type: string
                                   required:
-                                  - extraConfigFiles
                                   - repoURL
                                   type: object
                                 sourceHydrator:
@@ -672,7 +671,6 @@ spec:
                                       targetRevision:
                                         type: string
                                     required:
-                                    - extraConfigFiles
                                     - repoURL
                                     type: object
                                   type: array
@@ -1083,7 +1081,6 @@ spec:
                                     targetRevision:
                                       type: string
                                   required:
-                                  - extraConfigFiles
                                   - repoURL
                                   type: object
                                 sourceHydrator:
@@ -1369,7 +1366,6 @@ spec:
                                       targetRevision:
                                         type: string
                                     required:
-                                    - extraConfigFiles
                                     - repoURL
                                     type: object
                                   type: array
@@ -1779,7 +1775,6 @@ spec:
                                     targetRevision:
                                       type: string
                                   required:
-                                  - extraConfigFiles
                                   - repoURL
                                   type: object
                                 sourceHydrator:
@@ -2065,7 +2060,6 @@ spec:
                                       targetRevision:
                                         type: string
                                     required:
-                                    - extraConfigFiles
                                     - repoURL
                                     type: object
                                   type: array
@@ -2455,7 +2449,6 @@ spec:
                                     targetRevision:
                                       type: string
                                   required:
-                                  - extraConfigFiles
                                   - repoURL
                                   type: object
                                 sourceHydrator:
@@ -2741,7 +2734,6 @@ spec:
                                       targetRevision:
                                         type: string
                                     required:
-                                    - extraConfigFiles
                                     - repoURL
                                     type: object
                                   type: array
@@ -3156,7 +3148,6 @@ spec:
                                               targetRevision:
                                                 type: string
                                             required:
-                                            - extraConfigFiles
                                             - repoURL
                                             type: object
                                           sourceHydrator:
@@ -3442,7 +3433,6 @@ spec:
                                                 targetRevision:
                                                   type: string
                                               required:
-                                              - extraConfigFiles
                                               - repoURL
                                               type: object
                                             type: array
@@ -3853,7 +3843,6 @@ spec:
                                               targetRevision:
                                                 type: string
                                             required:
-                                            - extraConfigFiles
                                             - repoURL
                                             type: object
                                           sourceHydrator:
@@ -4139,7 +4128,6 @@ spec:
                                                 targetRevision:
                                                   type: string
                                               required:
-                                              - extraConfigFiles
                                               - repoURL
                                               type: object
                                             type: array
@@ -4549,7 +4537,6 @@ spec:
                                               targetRevision:
                                                 type: string
                                             required:
-                                            - extraConfigFiles
                                             - repoURL
                                             type: object
                                           sourceHydrator:
@@ -4835,7 +4822,6 @@ spec:
                                                 targetRevision:
                                                   type: string
                                               required:
-                                              - extraConfigFiles
                                               - repoURL
                                               type: object
                                             type: array
@@ -5225,7 +5211,6 @@ spec:
                                               targetRevision:
                                                 type: string
                                             required:
-                                            - extraConfigFiles
                                             - repoURL
                                             type: object
                                           sourceHydrator:
@@ -5511,7 +5496,6 @@ spec:
                                                 targetRevision:
                                                   type: string
                                               required:
-                                              - extraConfigFiles
                                               - repoURL
                                               type: object
                                             type: array
@@ -5909,7 +5893,6 @@ spec:
                                               targetRevision:
                                                 type: string
                                             required:
-                                            - extraConfigFiles
                                             - repoURL
                                             type: object
                                           sourceHydrator:
@@ -6195,7 +6178,6 @@ spec:
                                                 targetRevision:
                                                   type: string
                                               required:
-                                              - extraConfigFiles
                                               - repoURL
                                               type: object
                                             type: array
@@ -6812,7 +6794,6 @@ spec:
                                               targetRevision:
                                                 type: string
                                             required:
-                                            - extraConfigFiles
                                             - repoURL
                                             type: object
                                           sourceHydrator:
@@ -7098,7 +7079,6 @@ spec:
                                                 targetRevision:
                                                   type: string
                                               required:
-                                              - extraConfigFiles
                                               - repoURL
                                               type: object
                                             type: array
@@ -7714,7 +7694,6 @@ spec:
                                               targetRevision:
                                                 type: string
                                             required:
-                                            - extraConfigFiles
                                             - repoURL
                                             type: object
                                           sourceHydrator:
@@ -8000,7 +7979,6 @@ spec:
                                                 targetRevision:
                                                   type: string
                                               required:
-                                              - extraConfigFiles
                                               - repoURL
                                               type: object
                                             type: array
@@ -8407,7 +8385,6 @@ spec:
                                     targetRevision:
                                       type: string
                                   required:
-                                  - extraConfigFiles
                                   - repoURL
                                   type: object
                                 sourceHydrator:
@@ -8693,7 +8670,6 @@ spec:
                                       targetRevision:
                                         type: string
                                     required:
-                                    - extraConfigFiles
                                     - repoURL
                                     type: object
                                   type: array
@@ -9110,7 +9086,6 @@ spec:
                                               targetRevision:
                                                 type: string
                                             required:
-                                            - extraConfigFiles
                                             - repoURL
                                             type: object
                                           sourceHydrator:
@@ -9396,7 +9371,6 @@ spec:
                                                 targetRevision:
                                                   type: string
                                               required:
-                                              - extraConfigFiles
                                               - repoURL
                                               type: object
                                             type: array
@@ -9807,7 +9781,6 @@ spec:
                                               targetRevision:
                                                 type: string
                                             required:
-                                            - extraConfigFiles
                                             - repoURL
                                             type: object
                                           sourceHydrator:
@@ -10093,7 +10066,6 @@ spec:
                                                 targetRevision:
                                                   type: string
                                               required:
-                                              - extraConfigFiles
                                               - repoURL
                                               type: object
                                             type: array
@@ -10503,7 +10475,6 @@ spec:
                                               targetRevision:
                                                 type: string
                                             required:
-                                            - extraConfigFiles
                                             - repoURL
                                             type: object
                                           sourceHydrator:
@@ -10789,7 +10760,6 @@ spec:
                                                 targetRevision:
                                                   type: string
                                               required:
-                                              - extraConfigFiles
                                               - repoURL
                                               type: object
                                             type: array
@@ -11179,7 +11149,6 @@ spec:
                                               targetRevision:
                                                 type: string
                                             required:
-                                            - extraConfigFiles
                                             - repoURL
                                             type: object
                                           sourceHydrator:
@@ -11465,7 +11434,6 @@ spec:
                                                 targetRevision:
                                                   type: string
                                               required:
-                                              - extraConfigFiles
                                               - repoURL
                                               type: object
                                             type: array
@@ -11863,7 +11831,6 @@ spec:
                                               targetRevision:
                                                 type: string
                                             required:
-                                            - extraConfigFiles
                                             - repoURL
                                             type: object
                                           sourceHydrator:
@@ -12149,7 +12116,6 @@ spec:
                                                 targetRevision:
                                                   type: string
                                               required:
-                                              - extraConfigFiles
                                               - repoURL
                                               type: object
                                             type: array
@@ -12766,7 +12732,6 @@ spec:
                                               targetRevision:
                                                 type: string
                                             required:
-                                            - extraConfigFiles
                                             - repoURL
                                             type: object
                                           sourceHydrator:
@@ -13052,7 +13017,6 @@ spec:
                                                 targetRevision:
                                                   type: string
                                               required:
-                                              - extraConfigFiles
                                               - repoURL
                                               type: object
                                             type: array
@@ -13668,7 +13632,6 @@ spec:
                                               targetRevision:
                                                 type: string
                                             required:
-                                            - extraConfigFiles
                                             - repoURL
                                             type: object
                                           sourceHydrator:
@@ -13954,7 +13917,6 @@ spec:
                                                 targetRevision:
                                                   type: string
                                               required:
-                                              - extraConfigFiles
                                               - repoURL
                                               type: object
                                             type: array
@@ -14365,7 +14327,6 @@ spec:
                                     targetRevision:
                                       type: string
                                   required:
-                                  - extraConfigFiles
                                   - repoURL
                                   type: object
                                 sourceHydrator:
@@ -14651,7 +14612,6 @@ spec:
                                       targetRevision:
                                         type: string
                                     required:
-                                    - extraConfigFiles
                                     - repoURL
                                     type: object
                                   type: array
@@ -15048,7 +15008,6 @@ spec:
                                     targetRevision:
                                       type: string
                                   required:
-                                  - extraConfigFiles
                                   - repoURL
                                   type: object
                                 sourceHydrator:
@@ -15334,7 +15293,6 @@ spec:
                                       targetRevision:
                                         type: string
                                     required:
-                                    - extraConfigFiles
                                     - repoURL
                                     type: object
                                   type: array
@@ -15951,7 +15909,6 @@ spec:
                                     targetRevision:
                                       type: string
                                   required:
-                                  - extraConfigFiles
                                   - repoURL
                                   type: object
                                 sourceHydrator:
@@ -16237,7 +16194,6 @@ spec:
                                       targetRevision:
                                         type: string
                                     required:
-                                    - extraConfigFiles
                                     - repoURL
                                     type: object
                                   type: array
@@ -16853,7 +16809,6 @@ spec:
                                     targetRevision:
                                       type: string
                                   required:
-                                  - extraConfigFiles
                                   - repoURL
                                   type: object
                                 sourceHydrator:
@@ -17139,7 +17094,6 @@ spec:
                                       targetRevision:
                                         type: string
                                     required:
-                                    - extraConfigFiles
                                     - repoURL
                                     type: object
                                   type: array
@@ -17621,7 +17575,6 @@ spec:
                           targetRevision:
                             type: string
                         required:
-                        - extraConfigFiles
                         - repoURL
                         type: object
                       sourceHydrator:
@@ -17907,7 +17860,6 @@ spec:
                             targetRevision:
                               type: string
                           required:
-                          - extraConfigFiles
                           - repoURL
                           type: object
                         type: array
