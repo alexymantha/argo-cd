@@ -236,6 +236,14 @@ spec:
                               recursively for manifests
                             type: boolean
                         type: object
+                      extraConfigFiles:
+                        description: |-
+                          Lists of extra config files to be used when hydrating. Used only for applications using hydration
+                          Applied in the order they are defined.
+                          Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                        items:
+                          type: string
+                        type: array
                       helm:
                         description: Helm holds helm specific options
                         properties:
@@ -622,6 +630,14 @@ spec:
                                 recursively for manifests
                               type: boolean
                           type: object
+                        extraConfigFiles:
+                          description: |-
+                            Lists of extra config files to be used when hydrating. Used only for applications using hydration
+                            Applied in the order they are defined.
+                            Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                          items:
+                            type: string
+                          type: array
                         helm:
                           description: Helm holds helm specific options
                           properties:
@@ -1127,6 +1143,14 @@ spec:
                           recursively for manifests
                         type: boolean
                     type: object
+                  extraConfigFiles:
+                    description: |-
+                      Lists of extra config files to be used when hydrating. Used only for applications using hydration
+                      Applied in the order they are defined.
+                      Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                    items:
+                      type: string
+                    type: array
                   helm:
                     description: Helm holds helm specific options
                     properties:
@@ -1439,6 +1463,14 @@ spec:
                     description: DrySource specifies where the dry "don't repeat yourself"
                       manifest source lives.
                     properties:
+                      extraConfigFiles:
+                        description: |-
+                          Lists of extra config files to be used when hydrating.
+                          Applied in the order they are defined.
+                          Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                        items:
+                          type: string
+                        type: array
                       path:
                         description: Path is a directory path within the Git repository
                           where the manifests are located
@@ -1561,6 +1593,14 @@ spec:
                             recursively for manifests
                           type: boolean
                       type: object
+                    extraConfigFiles:
+                      description: |-
+                        Lists of extra config files to be used when hydrating. Used only for applications using hydration
+                        Applied in the order they are defined.
+                        Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                      items:
+                        type: string
+                      type: array
                     helm:
                       description: Helm holds helm specific options
                       properties:
@@ -2112,6 +2152,14 @@ spec:
                                 recursively for manifests
                               type: boolean
                           type: object
+                        extraConfigFiles:
+                          description: |-
+                            Lists of extra config files to be used when hydrating. Used only for applications using hydration
+                            Applied in the order they are defined.
+                            Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                          items:
+                            type: string
+                          type: array
                         helm:
                           description: Helm holds helm specific options
                           properties:
@@ -2500,6 +2548,14 @@ spec:
                                   recursively for manifests
                                 type: boolean
                             type: object
+                          extraConfigFiles:
+                            description: |-
+                              Lists of extra config files to be used when hydrating. Used only for applications using hydration
+                              Applied in the order they are defined.
+                              Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                            items:
+                              type: string
+                            type: array
                           helm:
                             description: Helm holds helm specific options
                             properties:
@@ -3037,6 +3093,14 @@ spec:
                                       a directory recursively for manifests
                                     type: boolean
                                 type: object
+                              extraConfigFiles:
+                                description: |-
+                                  Lists of extra config files to be used when hydrating. Used only for applications using hydration
+                                  Applied in the order they are defined.
+                                  Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                                items:
+                                  type: string
+                                type: array
                               helm:
                                 description: Helm holds helm specific options
                                 properties:
@@ -3447,6 +3511,14 @@ spec:
                                         a directory recursively for manifests
                                       type: boolean
                                   type: object
+                                extraConfigFiles:
+                                  description: |-
+                                    Lists of extra config files to be used when hydrating. Used only for applications using hydration
+                                    Applied in the order they are defined.
+                                    Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                                  items:
+                                    type: string
+                                  type: array
                                 helm:
                                   description: Helm holds helm specific options
                                   properties:
@@ -3980,6 +4052,14 @@ spec:
                                   recursively for manifests
                                 type: boolean
                             type: object
+                          extraConfigFiles:
+                            description: |-
+                              Lists of extra config files to be used when hydrating. Used only for applications using hydration
+                              Applied in the order they are defined.
+                              Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                            items:
+                              type: string
+                            type: array
                           helm:
                             description: Helm holds helm specific options
                             properties:
@@ -4379,6 +4459,14 @@ spec:
                                     directory recursively for manifests
                                   type: boolean
                               type: object
+                            extraConfigFiles:
+                              description: |-
+                                Lists of extra config files to be used when hydrating. Used only for applications using hydration
+                                Applied in the order they are defined.
+                                Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                              items:
+                                type: string
+                              type: array
                             helm:
                               description: Helm holds helm specific options
                               properties:
@@ -4834,6 +4922,14 @@ spec:
                             description: DrySource specifies where the dry "don't
                               repeat yourself" manifest source lives.
                             properties:
+                              extraConfigFiles:
+                                description: |-
+                                  Lists of extra config files to be used when hydrating.
+                                  Applied in the order they are defined.
+                                  Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                                items:
+                                  type: string
+                                type: array
                               path:
                                 description: Path is a directory path within the Git
                                   repository where the manifests are located
@@ -4913,6 +5009,14 @@ spec:
                             description: DrySource specifies where the dry "don't
                               repeat yourself" manifest source lives.
                             properties:
+                              extraConfigFiles:
+                                description: |-
+                                  Lists of extra config files to be used when hydrating.
+                                  Applied in the order they are defined.
+                                  Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                                items:
+                                  type: string
+                                type: array
                               path:
                                 description: Path is a directory path within the Git
                                   repository where the manifests are located
@@ -5126,6 +5230,14 @@ spec:
                                   recursively for manifests
                                 type: boolean
                             type: object
+                          extraConfigFiles:
+                            description: |-
+                              Lists of extra config files to be used when hydrating. Used only for applications using hydration
+                              Applied in the order they are defined.
+                              Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                            items:
+                              type: string
+                            type: array
                           helm:
                             description: Helm holds helm specific options
                             properties:
@@ -5525,6 +5637,14 @@ spec:
                                     directory recursively for manifests
                                   type: boolean
                               type: object
+                            extraConfigFiles:
+                              description: |-
+                                Lists of extra config files to be used when hydrating. Used only for applications using hydration
+                                Applied in the order they are defined.
+                                Applied after .argocd-source.yaml but before .argocd-source-<app>.yaml
+                              items:
+                                type: string
+                              type: array
                             helm:
                               description: Helm holds helm specific options
                               properties:
@@ -6077,6 +6197,10 @@ spec:
                                         recurse:
                                           type: boolean
                                       type: object
+                                    extraConfigFiles:
+                                      items:
+                                        type: string
+                                      type: array
                                     helm:
                                       properties:
                                         apiVersions:
@@ -6272,6 +6396,10 @@ spec:
                                   properties:
                                     drySource:
                                       properties:
+                                        extraConfigFiles:
+                                          items:
+                                            type: string
+                                          type: array
                                         path:
                                           type: string
                                         repoURL:
@@ -6353,6 +6481,10 @@ spec:
                                           recurse:
                                             type: boolean
                                         type: object
+                                      extraConfigFiles:
+                                        items:
+                                          type: string
+                                        type: array
                                       helm:
                                         properties:
                                           apiVersions:
@@ -6759,6 +6891,10 @@ spec:
                                         recurse:
                                           type: boolean
                                       type: object
+                                    extraConfigFiles:
+                                      items:
+                                        type: string
+                                      type: array
                                     helm:
                                       properties:
                                         apiVersions:
@@ -6954,6 +7090,10 @@ spec:
                                   properties:
                                     drySource:
                                       properties:
+                                        extraConfigFiles:
+                                          items:
+                                            type: string
+                                          type: array
                                         path:
                                           type: string
                                         repoURL:
@@ -7035,6 +7175,10 @@ spec:
                                           recurse:
                                             type: boolean
                                         type: object
+                                      extraConfigFiles:
+                                        items:
+                                          type: string
+                                        type: array
                                       helm:
                                         properties:
                                           apiVersions:
@@ -7440,6 +7584,10 @@ spec:
                                         recurse:
                                           type: boolean
                                       type: object
+                                    extraConfigFiles:
+                                      items:
+                                        type: string
+                                      type: array
                                     helm:
                                       properties:
                                         apiVersions:
@@ -7635,6 +7783,10 @@ spec:
                                   properties:
                                     drySource:
                                       properties:
+                                        extraConfigFiles:
+                                          items:
+                                            type: string
+                                          type: array
                                         path:
                                           type: string
                                         repoURL:
@@ -7716,6 +7868,10 @@ spec:
                                           recurse:
                                             type: boolean
                                         type: object
+                                      extraConfigFiles:
+                                        items:
+                                          type: string
+                                        type: array
                                       helm:
                                         properties:
                                           apiVersions:
@@ -8101,6 +8257,10 @@ spec:
                                         recurse:
                                           type: boolean
                                       type: object
+                                    extraConfigFiles:
+                                      items:
+                                        type: string
+                                      type: array
                                     helm:
                                       properties:
                                         apiVersions:
@@ -8296,6 +8456,10 @@ spec:
                                   properties:
                                     drySource:
                                       properties:
+                                        extraConfigFiles:
+                                          items:
+                                            type: string
+                                          type: array
                                         path:
                                           type: string
                                         repoURL:
@@ -8377,6 +8541,10 @@ spec:
                                           recurse:
                                             type: boolean
                                         type: object
+                                      extraConfigFiles:
+                                        items:
+                                          type: string
+                                        type: array
                                       helm:
                                         properties:
                                           apiVersions:
@@ -8787,6 +8955,10 @@ spec:
                                                   recurse:
                                                     type: boolean
                                                 type: object
+                                              extraConfigFiles:
+                                                items:
+                                                  type: string
+                                                type: array
                                               helm:
                                                 properties:
                                                   apiVersions:
@@ -8982,6 +9154,10 @@ spec:
                                             properties:
                                               drySource:
                                                 properties:
+                                                  extraConfigFiles:
+                                                    items:
+                                                      type: string
+                                                    type: array
                                                   path:
                                                     type: string
                                                   repoURL:
@@ -9063,6 +9239,10 @@ spec:
                                                     recurse:
                                                       type: boolean
                                                   type: object
+                                                extraConfigFiles:
+                                                  items:
+                                                    type: string
+                                                  type: array
                                                 helm:
                                                   properties:
                                                     apiVersions:
@@ -9469,6 +9649,10 @@ spec:
                                                   recurse:
                                                     type: boolean
                                                 type: object
+                                              extraConfigFiles:
+                                                items:
+                                                  type: string
+                                                type: array
                                               helm:
                                                 properties:
                                                   apiVersions:
@@ -9664,6 +9848,10 @@ spec:
                                             properties:
                                               drySource:
                                                 properties:
+                                                  extraConfigFiles:
+                                                    items:
+                                                      type: string
+                                                    type: array
                                                   path:
                                                     type: string
                                                   repoURL:
@@ -9745,6 +9933,10 @@ spec:
                                                     recurse:
                                                       type: boolean
                                                   type: object
+                                                extraConfigFiles:
+                                                  items:
+                                                    type: string
+                                                  type: array
                                                 helm:
                                                   properties:
                                                     apiVersions:
@@ -10150,6 +10342,10 @@ spec:
                                                   recurse:
                                                     type: boolean
                                                 type: object
+                                              extraConfigFiles:
+                                                items:
+                                                  type: string
+                                                type: array
                                               helm:
                                                 properties:
                                                   apiVersions:
@@ -10345,6 +10541,10 @@ spec:
                                             properties:
                                               drySource:
                                                 properties:
+                                                  extraConfigFiles:
+                                                    items:
+                                                      type: string
+                                                    type: array
                                                   path:
                                                     type: string
                                                   repoURL:
@@ -10426,6 +10626,10 @@ spec:
                                                     recurse:
                                                       type: boolean
                                                   type: object
+                                                extraConfigFiles:
+                                                  items:
+                                                    type: string
+                                                  type: array
                                                 helm:
                                                   properties:
                                                     apiVersions:
@@ -10811,6 +11015,10 @@ spec:
                                                   recurse:
                                                     type: boolean
                                                 type: object
+                                              extraConfigFiles:
+                                                items:
+                                                  type: string
+                                                type: array
                                               helm:
                                                 properties:
                                                   apiVersions:
@@ -11006,6 +11214,10 @@ spec:
                                             properties:
                                               drySource:
                                                 properties:
+                                                  extraConfigFiles:
+                                                    items:
+                                                      type: string
+                                                    type: array
                                                   path:
                                                     type: string
                                                   repoURL:
@@ -11087,6 +11299,10 @@ spec:
                                                     recurse:
                                                       type: boolean
                                                   type: object
+                                                extraConfigFiles:
+                                                  items:
+                                                    type: string
+                                                  type: array
                                                 helm:
                                                   properties:
                                                     apiVersions:
@@ -11480,6 +11696,10 @@ spec:
                                                   recurse:
                                                     type: boolean
                                                 type: object
+                                              extraConfigFiles:
+                                                items:
+                                                  type: string
+                                                type: array
                                               helm:
                                                 properties:
                                                   apiVersions:
@@ -11675,6 +11895,10 @@ spec:
                                             properties:
                                               drySource:
                                                 properties:
+                                                  extraConfigFiles:
+                                                    items:
+                                                      type: string
+                                                    type: array
                                                   path:
                                                     type: string
                                                   repoURL:
@@ -11756,6 +11980,10 @@ spec:
                                                     recurse:
                                                       type: boolean
                                                   type: object
+                                                extraConfigFiles:
+                                                  items:
+                                                    type: string
+                                                  type: array
                                                 helm:
                                                   properties:
                                                     apiVersions:
@@ -12368,6 +12596,10 @@ spec:
                                                   recurse:
                                                     type: boolean
                                                 type: object
+                                              extraConfigFiles:
+                                                items:
+                                                  type: string
+                                                type: array
                                               helm:
                                                 properties:
                                                   apiVersions:
@@ -12563,6 +12795,10 @@ spec:
                                             properties:
                                               drySource:
                                                 properties:
+                                                  extraConfigFiles:
+                                                    items:
+                                                      type: string
+                                                    type: array
                                                   path:
                                                     type: string
                                                   repoURL:
@@ -12644,6 +12880,10 @@ spec:
                                                     recurse:
                                                       type: boolean
                                                   type: object
+                                                extraConfigFiles:
+                                                  items:
+                                                    type: string
+                                                  type: array
                                                 helm:
                                                   properties:
                                                     apiVersions:
@@ -13255,6 +13495,10 @@ spec:
                                                   recurse:
                                                     type: boolean
                                                 type: object
+                                              extraConfigFiles:
+                                                items:
+                                                  type: string
+                                                type: array
                                               helm:
                                                 properties:
                                                   apiVersions:
@@ -13450,6 +13694,10 @@ spec:
                                             properties:
                                               drySource:
                                                 properties:
+                                                  extraConfigFiles:
+                                                    items:
+                                                      type: string
+                                                    type: array
                                                   path:
                                                     type: string
                                                   repoURL:
@@ -13531,6 +13779,10 @@ spec:
                                                     recurse:
                                                       type: boolean
                                                   type: object
+                                                extraConfigFiles:
+                                                  items:
+                                                    type: string
+                                                  type: array
                                                 helm:
                                                   properties:
                                                     apiVersions:
@@ -13933,6 +14185,10 @@ spec:
                                         recurse:
                                           type: boolean
                                       type: object
+                                    extraConfigFiles:
+                                      items:
+                                        type: string
+                                      type: array
                                     helm:
                                       properties:
                                         apiVersions:
@@ -14128,6 +14384,10 @@ spec:
                                   properties:
                                     drySource:
                                       properties:
+                                        extraConfigFiles:
+                                          items:
+                                            type: string
+                                          type: array
                                         path:
                                           type: string
                                         repoURL:
@@ -14209,6 +14469,10 @@ spec:
                                           recurse:
                                             type: boolean
                                         type: object
+                                      extraConfigFiles:
+                                        items:
+                                          type: string
+                                        type: array
                                       helm:
                                         properties:
                                           apiVersions:
@@ -14621,6 +14885,10 @@ spec:
                                                   recurse:
                                                     type: boolean
                                                 type: object
+                                              extraConfigFiles:
+                                                items:
+                                                  type: string
+                                                type: array
                                               helm:
                                                 properties:
                                                   apiVersions:
@@ -14816,6 +15084,10 @@ spec:
                                             properties:
                                               drySource:
                                                 properties:
+                                                  extraConfigFiles:
+                                                    items:
+                                                      type: string
+                                                    type: array
                                                   path:
                                                     type: string
                                                   repoURL:
@@ -14897,6 +15169,10 @@ spec:
                                                     recurse:
                                                       type: boolean
                                                   type: object
+                                                extraConfigFiles:
+                                                  items:
+                                                    type: string
+                                                  type: array
                                                 helm:
                                                   properties:
                                                     apiVersions:
@@ -15303,6 +15579,10 @@ spec:
                                                   recurse:
                                                     type: boolean
                                                 type: object
+                                              extraConfigFiles:
+                                                items:
+                                                  type: string
+                                                type: array
                                               helm:
                                                 properties:
                                                   apiVersions:
@@ -15498,6 +15778,10 @@ spec:
                                             properties:
                                               drySource:
                                                 properties:
+                                                  extraConfigFiles:
+                                                    items:
+                                                      type: string
+                                                    type: array
                                                   path:
                                                     type: string
                                                   repoURL:
@@ -15579,6 +15863,10 @@ spec:
                                                     recurse:
                                                       type: boolean
                                                   type: object
+                                                extraConfigFiles:
+                                                  items:
+                                                    type: string
+                                                  type: array
                                                 helm:
                                                   properties:
                                                     apiVersions:
@@ -15984,6 +16272,10 @@ spec:
                                                   recurse:
                                                     type: boolean
                                                 type: object
+                                              extraConfigFiles:
+                                                items:
+                                                  type: string
+                                                type: array
                                               helm:
                                                 properties:
                                                   apiVersions:
@@ -16179,6 +16471,10 @@ spec:
                                             properties:
                                               drySource:
                                                 properties:
+                                                  extraConfigFiles:
+                                                    items:
+                                                      type: string
+                                                    type: array
                                                   path:
                                                     type: string
                                                   repoURL:
@@ -16260,6 +16556,10 @@ spec:
                                                     recurse:
                                                       type: boolean
                                                   type: object
+                                                extraConfigFiles:
+                                                  items:
+                                                    type: string
+                                                  type: array
                                                 helm:
                                                   properties:
                                                     apiVersions:
@@ -16645,6 +16945,10 @@ spec:
                                                   recurse:
                                                     type: boolean
                                                 type: object
+                                              extraConfigFiles:
+                                                items:
+                                                  type: string
+                                                type: array
                                               helm:
                                                 properties:
                                                   apiVersions:
@@ -16840,6 +17144,10 @@ spec:
                                             properties:
                                               drySource:
                                                 properties:
+                                                  extraConfigFiles:
+                                                    items:
+                                                      type: string
+                                                    type: array
                                                   path:
                                                     type: string
                                                   repoURL:
@@ -16921,6 +17229,10 @@ spec:
                                                     recurse:
                                                       type: boolean
                                                   type: object
+                                                extraConfigFiles:
+                                                  items:
+                                                    type: string
+                                                  type: array
                                                 helm:
                                                   properties:
                                                     apiVersions:
@@ -17314,6 +17626,10 @@ spec:
                                                   recurse:
                                                     type: boolean
                                                 type: object
+                                              extraConfigFiles:
+                                                items:
+                                                  type: string
+                                                type: array
                                               helm:
                                                 properties:
                                                   apiVersions:
@@ -17509,6 +17825,10 @@ spec:
                                             properties:
                                               drySource:
                                                 properties:
+                                                  extraConfigFiles:
+                                                    items:
+                                                      type: string
+                                                    type: array
                                                   path:
                                                     type: string
                                                   repoURL:
@@ -17590,6 +17910,10 @@ spec:
                                                     recurse:
                                                       type: boolean
                                                   type: object
+                                                extraConfigFiles:
+                                                  items:
+                                                    type: string
+                                                  type: array
                                                 helm:
                                                   properties:
                                                     apiVersions:
@@ -18202,6 +18526,10 @@ spec:
                                                   recurse:
                                                     type: boolean
                                                 type: object
+                                              extraConfigFiles:
+                                                items:
+                                                  type: string
+                                                type: array
                                               helm:
                                                 properties:
                                                   apiVersions:
@@ -18397,6 +18725,10 @@ spec:
                                             properties:
                                               drySource:
                                                 properties:
+                                                  extraConfigFiles:
+                                                    items:
+                                                      type: string
+                                                    type: array
                                                   path:
                                                     type: string
                                                   repoURL:
@@ -18478,6 +18810,10 @@ spec:
                                                     recurse:
                                                       type: boolean
                                                   type: object
+                                                extraConfigFiles:
+                                                  items:
+                                                    type: string
+                                                  type: array
                                                 helm:
                                                   properties:
                                                     apiVersions:
@@ -19089,6 +19425,10 @@ spec:
                                                   recurse:
                                                     type: boolean
                                                 type: object
+                                              extraConfigFiles:
+                                                items:
+                                                  type: string
+                                                type: array
                                               helm:
                                                 properties:
                                                   apiVersions:
@@ -19284,6 +19624,10 @@ spec:
                                             properties:
                                               drySource:
                                                 properties:
+                                                  extraConfigFiles:
+                                                    items:
+                                                      type: string
+                                                    type: array
                                                   path:
                                                     type: string
                                                   repoURL:
@@ -19365,6 +19709,10 @@ spec:
                                                     recurse:
                                                       type: boolean
                                                   type: object
+                                                extraConfigFiles:
+                                                  items:
+                                                    type: string
+                                                  type: array
                                                 helm:
                                                   properties:
                                                     apiVersions:
@@ -19771,6 +20119,10 @@ spec:
                                         recurse:
                                           type: boolean
                                       type: object
+                                    extraConfigFiles:
+                                      items:
+                                        type: string
+                                      type: array
                                     helm:
                                       properties:
                                         apiVersions:
@@ -19966,6 +20318,10 @@ spec:
                                   properties:
                                     drySource:
                                       properties:
+                                        extraConfigFiles:
+                                          items:
+                                            type: string
+                                          type: array
                                         path:
                                           type: string
                                         repoURL:
@@ -20047,6 +20403,10 @@ spec:
                                           recurse:
                                             type: boolean
                                         type: object
+                                      extraConfigFiles:
+                                        items:
+                                          type: string
+                                        type: array
                                       helm:
                                         properties:
                                           apiVersions:
@@ -20439,6 +20799,10 @@ spec:
                                         recurse:
                                           type: boolean
                                       type: object
+                                    extraConfigFiles:
+                                      items:
+                                        type: string
+                                      type: array
                                     helm:
                                       properties:
                                         apiVersions:
@@ -20634,6 +20998,10 @@ spec:
                                   properties:
                                     drySource:
                                       properties:
+                                        extraConfigFiles:
+                                          items:
+                                            type: string
+                                          type: array
                                         path:
                                           type: string
                                         repoURL:
@@ -20715,6 +21083,10 @@ spec:
                                           recurse:
                                             type: boolean
                                         type: object
+                                      extraConfigFiles:
+                                        items:
+                                          type: string
+                                        type: array
                                       helm:
                                         properties:
                                           apiVersions:
@@ -21327,6 +21699,10 @@ spec:
                                         recurse:
                                           type: boolean
                                       type: object
+                                    extraConfigFiles:
+                                      items:
+                                        type: string
+                                      type: array
                                     helm:
                                       properties:
                                         apiVersions:
@@ -21522,6 +21898,10 @@ spec:
                                   properties:
                                     drySource:
                                       properties:
+                                        extraConfigFiles:
+                                          items:
+                                            type: string
+                                          type: array
                                         path:
                                           type: string
                                         repoURL:
@@ -21603,6 +21983,10 @@ spec:
                                           recurse:
                                             type: boolean
                                         type: object
+                                      extraConfigFiles:
+                                        items:
+                                          type: string
+                                        type: array
                                       helm:
                                         properties:
                                           apiVersions:
@@ -22214,6 +22598,10 @@ spec:
                                         recurse:
                                           type: boolean
                                       type: object
+                                    extraConfigFiles:
+                                      items:
+                                        type: string
+                                      type: array
                                     helm:
                                       properties:
                                         apiVersions:
@@ -22409,6 +22797,10 @@ spec:
                                   properties:
                                     drySource:
                                       properties:
+                                        extraConfigFiles:
+                                          items:
+                                            type: string
+                                          type: array
                                         path:
                                           type: string
                                         repoURL:
@@ -22490,6 +22882,10 @@ spec:
                                           recurse:
                                             type: boolean
                                         type: object
+                                      extraConfigFiles:
+                                        items:
+                                          type: string
+                                        type: array
                                       helm:
                                         properties:
                                           apiVersions:
@@ -22967,6 +23363,10 @@ spec:
                               recurse:
                                 type: boolean
                             type: object
+                          extraConfigFiles:
+                            items:
+                              type: string
+                            type: array
                           helm:
                             properties:
                               apiVersions:
@@ -23162,6 +23562,10 @@ spec:
                         properties:
                           drySource:
                             properties:
+                              extraConfigFiles:
+                                items:
+                                  type: string
+                                type: array
                               path:
                                 type: string
                               repoURL:
@@ -23243,6 +23647,10 @@ spec:
                                 recurse:
                                   type: boolean
                               type: object
+                            extraConfigFiles:
+                              items:
+                                type: string
+                              type: array
                             helm:
                               properties:
                                 apiVersions:
