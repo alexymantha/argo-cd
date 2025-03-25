@@ -274,6 +274,8 @@ func (a *ArgoCDWebhookHandler) HandleEvent(payload any) {
 		return
 	}
 
+	log.Infof("Processing %d applications", len(apps.Items))
+
 	installationID, err := a.settingsSrc.GetInstallationID()
 	if err != nil {
 		log.Warnf("Failed to get installation ID: %v", err)
@@ -299,6 +301,8 @@ func (a *ArgoCDWebhookHandler) HandleEvent(payload any) {
 		}
 	}
 
+	log.Infof("Processing %d applications after filter", len(apps.Items))
+
 	for _, webURL := range webURLs {
 		repoRegexp, err := GetWebURLRegex(webURL)
 		if err != nil {
@@ -306,9 +310,13 @@ func (a *ArgoCDWebhookHandler) HandleEvent(payload any) {
 			continue
 		}
 		for _, app := range filteredApps {
+			log.Infof("Processing applications %s", app.GetName())
 			for _, source := range app.Spec.GetSources() {
+				log.Infof("Changed: %t", sourceRevisionHasChanged(source, revision, touchedHead))
+				log.Infof("Uses URL: %t", sourceUsesURL(source, webURL, repoRegexp))
 				if sourceRevisionHasChanged(source, revision, touchedHead) && sourceUsesURL(source, webURL, repoRegexp) {
 					refreshPaths := path.GetAppRefreshPaths(&app)
+					log.Infof("Files have changed: %t", path.AppFilesHaveChanged(refreshPaths, changedFiles))
 					if path.AppFilesHaveChanged(refreshPaths, changedFiles) {
 						namespacedAppInterface := a.appClientset.ArgoprojV1alpha1().Applications(app.ObjectMeta.Namespace)
 						_, err = argo.RefreshApp(namespacedAppInterface, app.ObjectMeta.Name, v1alpha1.RefreshTypeNormal, true)
